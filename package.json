@@ -1,0 +1,30 @@
+{
+  "name": "parshuram-fitness-gym",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Parshuram Fitness Gym - Complete Digital Ecosystem (Website, Admin Dashboard, Member Mobile App, Employee Mobile App, Shared Backend)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace=apps/web run dev",
+    "build:web": "npm --workspace=apps/web run build",
+    "start:web": "npm --workspace=apps/web run start",
+    "dev:member": "npm --workspace=apps/member-app run start",
+    "dev:employee": "npm --workspace=apps/employee-app run start",
+    "type-check": "npm run --workspaces --if-present type-check",
+    "test": "node --test tests/*.test.js",
+    "lint": "npm run --workspaces --if-present lint"
+  },
+  "keywords": [
+    "parshuram-fitness",
+    "gym-management",
+    "nextjs",
+    "react-native",
+    "expo",
+    "supabase"
+  ],
+  "author": "Parshuram Fitness Gym (Owner: Dave)",
+  "license": "UNLICENSED"
+}
