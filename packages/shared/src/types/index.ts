@@ -25,7 +25,7 @@ export interface Member {
   height_cm?: number;
   weight_kg?: number;
   join_date: string;
-  status: 'active' | 'inactive' | 'pending';
+  status: 'active' | 'inactive' | 'pending' | 'archived';
   active_membership_id?: string;
   created_at: string;
   updated_at: string;
@@ -39,7 +39,7 @@ export interface Employee {
   designation: string;
   salary_type: 'monthly' | 'hourly' | 'per_session';
   joining_date: string;
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'archived';
   created_at: string;
   updated_at: string;
 }

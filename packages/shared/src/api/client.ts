@@ -380,6 +380,8 @@ export class GymApiClient {
     fitnessGoal?: any;
     heightCm?: number;
     weightKg?: number;
+    emergencyContact?: string;
+    bloodGroup?: string;
   }): Promise<{ profile: Profile; member: Member }> {
     const profile: Profile = {
       id: `prof-${Date.now()}`,
@@ -400,6 +402,8 @@ export class GymApiClient {
       fitness_goal: data.fitnessGoal || 'general_fitness',
       height_cm: data.heightCm,
       weight_kg: data.weightKg,
+      emergency_contact: data.emergencyContact,
+      blood_group: data.bloodGroup,
       join_date: new Date().toISOString().split('T')[0],
       status: 'active',
       active_membership_id: 'plan-monthly',
