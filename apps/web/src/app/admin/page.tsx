@@ -66,7 +66,7 @@ export default function AdminOverviewPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <RefreshCw className="w-8 h-8 text-gym-red animate-spin mx-auto mb-3" />
+          <RefreshCw className="w-8 h-8 text-[#D4AF37] animate-spin mx-auto mb-3" />
           <p className="text-xs text-zinc-400 uppercase tracking-wider">Loading Dave&apos;s Central Dashboard...</p>
         </div>
       </div>
@@ -76,9 +76,9 @@ export default function AdminOverviewPage() {
   return (
     <div className="space-y-8">
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gym-card p-6 rounded-2xl border border-gym-border shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#101B37] p-6 rounded-2xl border border-[#1E305C] shadow-xl">
         <div>
-          <span className="text-xs uppercase font-bold text-gym-red tracking-widest">
+          <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-widest">
             {BRAND.name} • Executive Center
           </span>
           <h1 className="text-3xl font-black uppercase font-display text-white mt-1">
@@ -92,7 +92,7 @@ export default function AdminOverviewPage() {
         <div className="flex items-center space-x-3">
           <Link
             href="/admin/attendance"
-            className="px-4 py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md shadow-red-950/60 flex items-center space-x-2"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-[#050B17] text-xs font-black uppercase tracking-wider transition-colors shadow-md shadow-black/60 flex items-center space-x-2"
           >
             <QrCode className="w-4 h-4" />
             <span>Launch Floor QR</span>
@@ -103,7 +103,7 @@ export default function AdminOverviewPage() {
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Total Members */}
-        <div className="bg-gym-card p-4 rounded-xl border border-gym-border flex flex-col justify-between">
+        <div className="bg-[#101B37] p-4 rounded-xl border border-[#1E305C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
             <span className="text-[11px] font-bold uppercase">Total Members</span>
             <Users className="w-4 h-4 text-gym-silver" />
@@ -115,10 +115,10 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* Total Employees */}
-        <div className="bg-gym-card p-4 rounded-xl border border-gym-border flex flex-col justify-between">
+        <div className="bg-[#101B37] p-4 rounded-xl border border-[#1E305C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
             <span className="text-[11px] font-bold uppercase">Staff &amp; Coaches</span>
-            <UserCheck className="w-4 h-4 text-gym-red" />
+            <UserCheck className="w-4 h-4 text-[#D4AF37]" />
           </div>
           <div>
             <p className="text-2xl font-black text-white font-display">{metrics?.totalEmployees || 0}</p>
@@ -127,22 +127,22 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* Today's Member Attendance */}
-        <div className="bg-gym-card p-4 rounded-xl border border-gym-border flex flex-col justify-between">
+        <div className="bg-[#101B37] p-4 rounded-xl border border-[#1E305C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
             <span className="text-[11px] font-bold uppercase">Member Visits Today</span>
             <CalendarCheck className="w-4 h-4 text-gym-silver" />
           </div>
           <div>
-            <p className="text-2xl font-black text-gym-red font-display">{metrics?.todayMemberAttendance || 0}</p>
+            <p className="text-2xl font-black text-[#D4AF37] font-display">{metrics?.todayMemberAttendance || 0}</p>
             <span className="text-[10px] text-emerald-400 font-semibold">100% Free Check-ins</span>
           </div>
         </div>
 
         {/* Today's Staff Attendance */}
-        <div className="bg-gym-card p-4 rounded-xl border border-gym-border flex flex-col justify-between">
+        <div className="bg-[#101B37] p-4 rounded-xl border border-[#1E305C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
             <span className="text-[11px] font-bold uppercase">Staff Shifts Today</span>
-            <CalendarCheck className="w-4 h-4 text-gym-red" />
+            <CalendarCheck className="w-4 h-4 text-[#D4AF37]" />
           </div>
           <div>
             <p className="text-2xl font-black text-white font-display">{metrics?.todayStaffAttendance || 0}</p>
@@ -151,21 +151,21 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* Pending Leaves */}
-        <div className="bg-gym-card p-4 rounded-xl border border-gym-border flex flex-col justify-between">
+        <div className="bg-[#101B37] p-4 rounded-xl border border-[#1E305C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
             <span className="text-[11px] font-bold uppercase">Pending Leaves</span>
             <CalendarOff className="w-4 h-4 text-amber-400" />
           </div>
           <div>
             <p className="text-2xl font-black text-amber-400 font-display">{metrics?.pendingLeaves || 0}</p>
-            <Link href="/admin/leaves" className="text-[10px] text-gym-red font-bold hover:underline">
+            <Link href="/admin/leaves" className="text-[10px] text-[#D4AF37] font-bold hover:underline">
               Action Required →
             </Link>
           </div>
         </div>
 
         {/* Recent Enquiries */}
-        <div className="bg-gym-card p-4 rounded-xl border border-gym-border flex flex-col justify-between">
+        <div className="bg-[#101B37] p-4 rounded-xl border border-[#1E305C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-zinc-400 mb-2">
             <span className="text-[11px] font-bold uppercase">New Enquiries</span>
             <MessageSquare className="w-4 h-4 text-gym-silver" />
@@ -182,11 +182,11 @@ export default function AdminOverviewPage() {
       {/* Real-Time Live QR Attendance Widget + Pending Leaves Action Box */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Active QR Session Display */}
-        <div className="lg:col-span-6 bg-gym-card rounded-2xl border border-gym-border p-6 shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-6 bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-4 border-b border-gym-border pb-3">
+            <div className="flex items-center justify-between mb-4 border-b border-[#1E305C] pb-3">
               <div>
-                <span className="text-xs uppercase font-bold text-gym-red">Live Gym Entrance Terminal</span>
+                <span className="text-xs uppercase font-bold text-[#D4AF37]">Live Gym Entrance Terminal</span>
                 <h3 className="text-lg font-black uppercase text-white font-display mt-0.5">
                   Rotating QR Code Session
                 </h3>
@@ -194,16 +194,16 @@ export default function AdminOverviewPage() {
               <button
                 onClick={handleRefreshQR}
                 disabled={refreshingQR}
-                className="px-3 py-1.5 rounded-lg bg-gym-charcoal hover:bg-zinc-800 border border-gym-border text-xs font-bold text-white flex items-center space-x-1"
+                className="px-3 py-1.5 rounded-lg bg-[#0A1128] hover:bg-zinc-800 border border-[#1E305C] text-xs font-bold text-white flex items-center space-x-1"
               >
-                <RefreshCw className={`w-3.5 h-3.5 text-gym-red ${refreshingQR ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 text-[#D4AF37] ${refreshingQR ? 'animate-spin' : ''}`} />
                 <span>Refresh Code</span>
               </button>
             </div>
 
-            <div className="bg-gym-black rounded-xl p-6 border border-gym-border text-center flex flex-col items-center justify-center my-4">
+            <div className="bg-[#050B17] rounded-xl p-6 border border-[#1E305C] text-center flex flex-col items-center justify-center my-4">
               {/* Stylized QR Visual Frame */}
-              <div className="p-4 bg-white rounded-2xl shadow-xl border-4 border-gym-red">
+              <div className="p-4 bg-white rounded-2xl shadow-xl border-4 border-[#D4AF37]">
                 <div className="w-44 h-44 flex flex-col items-center justify-center text-black">
                   <QrCode className="w-36 h-36" />
                   <span className="text-[9px] font-black uppercase tracking-widest text-black mt-1">
@@ -213,7 +213,7 @@ export default function AdminOverviewPage() {
               </div>
 
               <div className="mt-4 text-center">
-                <span className="text-[11px] font-mono text-gym-silver bg-gym-charcoal px-3 py-1 rounded-md border border-gym-border">
+                <span className="text-[11px] font-mono text-gym-silver bg-[#0A1128] px-3 py-1 rounded-md border border-[#1E305C]">
                   Token: {qrSession?.token}
                 </span>
                 <p className="text-[11px] text-zinc-400 mt-2">
@@ -223,18 +223,18 @@ export default function AdminOverviewPage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gym-border flex items-center justify-between text-xs text-zinc-400">
+          <div className="pt-4 border-t border-[#1E305C] flex items-center justify-between text-xs text-zinc-400">
             <span>Free Attendance Mode: Active</span>
-            <Link href="/admin/attendance" className="text-gym-red font-bold hover:underline">
+            <Link href="/admin/attendance" className="text-[#D4AF37] font-bold hover:underline">
               View Detailed Logs &amp; Reports →
             </Link>
           </div>
         </div>
 
         {/* Quick Review of Pending Leaves */}
-        <div className="lg:col-span-6 bg-gym-card rounded-2xl border border-gym-border p-6 shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-6 bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 shadow-xl flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-4 border-b border-gym-border pb-3">
+            <div className="flex items-center justify-between mb-4 border-b border-[#1E305C] pb-3">
               <div>
                 <span className="text-xs uppercase font-bold text-amber-400">Staff Management</span>
                 <h3 className="text-lg font-black uppercase text-white font-display mt-0.5">
@@ -252,7 +252,7 @@ export default function AdminOverviewPage() {
 
             <div className="space-y-3">
               {(api as any).store.leaveApplications.filter((l: any) => l.status === 'pending').length === 0 ? (
-                <div className="text-center py-10 bg-gym-charcoal rounded-xl border border-gym-border">
+                <div className="text-center py-10 bg-[#0A1128] rounded-xl border border-[#1E305C]">
                   <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
                   <p className="text-xs font-bold text-white uppercase">All caught up!</p>
                   <p className="text-[11px] text-zinc-400 mt-0.5">No pending employee leave requests awaiting Dave&apos;s review.</p>
@@ -266,7 +266,7 @@ export default function AdminOverviewPage() {
                     return (
                       <div
                         key={leave.id}
-                        className="bg-gym-charcoal p-4 rounded-xl border border-gym-border flex flex-col justify-between gap-3"
+                        className="bg-[#0A1128] p-4 rounded-xl border border-[#1E305C] flex flex-col justify-between gap-3"
                       >
                         <div>
                           <div className="flex items-center justify-between">
@@ -280,15 +280,15 @@ export default function AdminOverviewPage() {
                           <p className="text-[11px] text-gym-silver mt-0.5">
                             {leave.start_date} to {leave.end_date}
                           </p>
-                          <p className="text-xs text-zinc-300 mt-2 italic bg-gym-black/40 p-2 rounded border border-gym-border/40">
+                          <p className="text-xs text-zinc-300 mt-2 italic bg-[#050B17]/40 p-2 rounded border border-[#1E305C]/40">
                             &quot;{leave.reason}&quot;
                           </p>
                         </div>
 
-                        <div className="flex items-center space-x-2 pt-2 border-t border-gym-border">
+                        <div className="flex items-center space-x-2 pt-2 border-t border-[#1E305C]">
                           <Link
                             href="/admin/leaves"
-                            className="w-full py-2 rounded-lg bg-gym-red hover:bg-gym-redHover text-white text-center text-xs font-bold uppercase tracking-wider transition-colors"
+                            className="w-full py-2 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white text-center text-xs font-bold uppercase tracking-wider transition-colors"
                           >
                             Review &amp; Decide
                           </Link>
@@ -300,7 +300,7 @@ export default function AdminOverviewPage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-gym-border flex items-center justify-between text-xs text-zinc-400">
+          <div className="pt-4 border-t border-[#1E305C] flex items-center justify-between text-xs text-zinc-400">
             <span>Authoritative Leave Record: Supabase Database</span>
             <span className="text-emerald-400 font-semibold">Configurable Allowance</span>
           </div>
@@ -308,8 +308,8 @@ export default function AdminOverviewPage() {
       </div>
 
       {/* Prospective Member Enquiries Feed */}
-      <div className="bg-gym-card rounded-2xl border border-gym-border p-6 shadow-xl">
-        <div className="flex items-center justify-between mb-4 border-b border-gym-border pb-3">
+      <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 shadow-xl">
+        <div className="flex items-center justify-between mb-4 border-b border-[#1E305C] pb-3">
           <div>
             <span className="text-xs uppercase font-bold text-gym-silver">Lead Pipeline</span>
             <h3 className="text-lg font-black uppercase text-white font-display mt-0.5">
@@ -327,7 +327,7 @@ export default function AdminOverviewPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-gym-charcoal text-zinc-400 uppercase font-bold text-[10px] border-b border-gym-border">
+            <thead className="bg-[#0A1128] text-zinc-400 uppercase font-bold text-[10px] border-b border-[#1E305C]">
               <tr>
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Contact</th>
@@ -339,7 +339,7 @@ export default function AdminOverviewPage() {
             </thead>
             <tbody className="divide-y divide-gym-border">
               {metrics?.recentEnquiries?.map((enq: any) => (
-                <tr key={enq.id} className="hover:bg-gym-charcoal/50">
+                <tr key={enq.id} className="hover:bg-[#0A1128]/50">
                   <td className="py-3 px-4 font-bold text-white">{enq.full_name}</td>
                   <td className="py-3 px-4 text-zinc-300">
                     <p>{enq.phone}</p>
@@ -348,7 +348,7 @@ export default function AdminOverviewPage() {
                   <td className="py-3 px-4 text-gym-silver">{enq.preferred_plan || 'General Tour'}</td>
                   <td className="py-3 px-4 text-zinc-400 max-w-xs truncate">{enq.message}</td>
                   <td className="py-3 px-4">
-                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gym-red/20 text-gym-red border border-gym-red/40">
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black/20 text-[#D4AF37] border border-[#D4AF37]/40">
                       {enq.status}
                     </span>
                   </td>
@@ -366,3 +366,6 @@ export default function AdminOverviewPage() {
     </div>
   );
 }
+
+
+

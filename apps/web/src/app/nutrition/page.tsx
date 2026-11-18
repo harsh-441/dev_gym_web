@@ -21,11 +21,11 @@ export default function NutritionPage() {
     : INITIAL_DIET_PLANS.filter((p) => p.target_goal === selectedGoal);
 
   return (
-    <div className="bg-gym-black text-white min-h-screen py-16">
+    <div className="bg-[#050B17] text-white min-h-screen py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <span className="text-xs font-bold uppercase tracking-widest text-gym-red">Indian Nutrition Mastery</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">Indian Nutrition Mastery</span>
           <h1 className="text-4xl sm:text-5xl font-black uppercase font-display text-white mt-2">
             Diet &amp; Nutrition Library
           </h1>
@@ -35,12 +35,12 @@ export default function NutritionPage() {
         </div>
 
         {/* Educational vs AI distinction banner */}
-        <div className="bg-gym-charcoal border border-gym-border rounded-xl p-4 mb-10 flex items-start space-x-3 text-xs text-zinc-300">
+        <div className="bg-[#0A1128] border border-[#1E305C] rounded-xl p-4 mb-10 flex items-start space-x-3 text-xs text-zinc-300">
           <AlertCircle className="w-5 h-5 text-gym-silver shrink-0 mt-0.5" />
           <div>
             <span className="font-bold text-white block mb-0.5">Educational Nutrition Library vs. AI Personalized Planner</span>
             These curated meal plans represent general educational templates. For a custom caloric calculation tailored to your exact height, weight, activity level, allergies, and injuries, use our{' '}
-            <Link href="/ai-planner" className="text-gym-red font-bold underline">
+            <Link href="/ai-planner" className="text-[#D4AF37] font-bold underline">
               AI Fitness &amp; Nutrition Planner
             </Link>.
           </div>
@@ -54,8 +54,8 @@ export default function NutritionPage() {
               onClick={() => setSelectedGoal(t.id)}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                 selectedGoal === t.id
-                  ? 'bg-gym-red text-white'
-                  : 'bg-gym-card text-zinc-400 hover:text-white border border-gym-border'
+                  ? 'bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black'
+                  : 'bg-[#101B37] text-zinc-400 hover:text-white border border-[#1E305C]'
               }`}
             >
               {t.label}
@@ -68,7 +68,7 @@ export default function NutritionPage() {
           {filteredPlans.map((plan) => (
             <div
               key={plan.id}
-              className="bg-gym-card rounded-2xl border border-gym-border p-6 flex flex-col justify-between hover:border-gym-red/50 transition-all shadow-xl"
+              className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all shadow-xl"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -92,13 +92,13 @@ export default function NutritionPage() {
                 </p>
 
                 {/* Macro breakdown pill */}
-                <div className="grid grid-cols-4 gap-2 bg-gym-charcoal p-3 rounded-xl border border-gym-border text-center mb-6">
+                <div className="grid grid-cols-4 gap-2 bg-[#0A1128] p-3 rounded-xl border border-[#1E305C] text-center mb-6">
                   <div>
                     <span className="block text-xs font-black text-white">{plan.calories}</span>
                     <span className="text-[9px] uppercase text-zinc-400">Calories</span>
                   </div>
                   <div>
-                    <span className="block text-xs font-black text-gym-red">{plan.protein_g}g</span>
+                    <span className="block text-xs font-black text-[#D4AF37]">{plan.protein_g}g</span>
                     <span className="text-[9px] uppercase text-zinc-400">Protein</span>
                   </div>
                   <div>
@@ -116,10 +116,10 @@ export default function NutritionPage() {
                   <div className="space-y-3 mb-6">
                     <h4 className="text-[11px] font-bold uppercase tracking-wider text-gym-silver">Daily Meal Breakdown</h4>
                     {plan.meals.map((meal) => (
-                      <div key={meal.id} className="text-xs bg-gym-black/60 p-3 rounded-lg border border-gym-border">
+                      <div key={meal.id} className="text-xs bg-[#050B17]/60 p-3 rounded-lg border border-[#1E305C]">
                         <div className="flex items-center justify-between text-gym-silver font-semibold mb-1 uppercase text-[10px]">
                           <span>{meal.meal_type}</span>
-                          <span className="text-gym-red">{meal.protein_g}g Protein • {meal.calories} kcal</span>
+                          <span className="text-[#D4AF37]">{meal.protein_g}g Protein • {meal.calories} kcal</span>
                         </div>
                         <p className="text-zinc-300 text-[11px] leading-relaxed">
                           {meal.food_item}
@@ -130,10 +130,10 @@ export default function NutritionPage() {
                 )}
               </div>
 
-              <div className="pt-4 border-t border-gym-border">
+              <div className="pt-4 border-t border-[#1E305C]">
                 <Link
                   href="/ai-planner"
-                  className="w-full py-2.5 rounded-lg bg-gym-charcoal hover:bg-gym-red text-white text-xs font-bold uppercase tracking-wider border border-gym-border transition-colors flex items-center justify-center space-x-1"
+                  className="w-full py-2.5 rounded-lg bg-[#0A1128] hover:bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black text-xs font-bold uppercase tracking-wider border border-[#1E305C] transition-colors flex items-center justify-center space-x-1"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Customize For My Body</span>
@@ -144,25 +144,25 @@ export default function NutritionPage() {
         </div>
 
         {/* 4 Pillars of Indian High-Protein Nutrition */}
-        <div className="bg-gym-card rounded-2xl border border-gym-border p-8">
+        <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-8">
           <h3 className="text-xl font-bold uppercase font-display text-white mb-6 text-center">
             Coach Dave&apos;s Desi High-Protein Principles
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs text-zinc-300 leading-relaxed">
-            <div className="bg-gym-charcoal p-4 rounded-xl border border-gym-border">
-              <span className="text-gym-red font-bold block mb-1 uppercase">1. Dal + Grain Synergy</span>
+            <div className="bg-[#0A1128] p-4 rounded-xl border border-[#1E305C]">
+              <span className="text-[#D4AF37] font-bold block mb-1 uppercase">1. Dal + Grain Synergy</span>
               Lentils alone lack methionine. Pair your dal with rotis, brown rice, or oats to form complete, high-absorption protein chains.
             </div>
-            <div className="bg-gym-charcoal p-4 rounded-xl border border-gym-border">
-              <span className="text-gym-red font-bold block mb-1 uppercase">2. Paneer &amp; Dahi Mastery</span>
+            <div className="bg-[#0A1128] p-4 rounded-xl border border-[#1E305C]">
+              <span className="text-[#D4AF37] font-bold block mb-1 uppercase">2. Paneer &amp; Dahi Mastery</span>
               High in bioavailable casein protein and gut-friendly probiotics. Essential for slow nocturnal amino-acid release during sleep.
             </div>
-            <div className="bg-gym-charcoal p-4 rounded-xl border border-gym-border">
-              <span className="text-gym-red font-bold block mb-1 uppercase">3. Sattu &amp; Chana Superfoods</span>
+            <div className="bg-[#0A1128] p-4 rounded-xl border border-[#1E305C]">
+              <span className="text-[#D4AF37] font-bold block mb-1 uppercase">3. Sattu &amp; Chana Superfoods</span>
               At ~₹60 per kg, roasted Bengal gram (chana) and sattu provide the highest protein-per-rupee ratio of any Indian food.
             </div>
-            <div className="bg-gym-charcoal p-4 rounded-xl border border-gym-border">
-              <span className="text-gym-red font-bold block mb-1 uppercase">4. Soya Chunks Hypertrophy</span>
+            <div className="bg-[#0A1128] p-4 rounded-xl border border-[#1E305C]">
+              <span className="text-[#D4AF37] font-bold block mb-1 uppercase">4. Soya Chunks Hypertrophy</span>
               52g protein per 100g dry weight. A complete plant-based powerhouse packed with Branched-Chain Amino Acids (BCAAs) and leucine.
             </div>
           </div>
@@ -171,3 +171,5 @@ export default function NutritionPage() {
     </div>
   );
 }
+
+

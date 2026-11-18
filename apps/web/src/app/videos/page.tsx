@@ -18,10 +18,10 @@ export default function VideosPage() {
   });
 
   return (
-    <div className="bg-gym-black text-white min-h-screen py-16">
+    <div className="bg-[#050B17] text-white min-h-screen py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-gym-red">Video Demonstration Hub</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">Video Demonstration Hub</span>
           <h1 className="text-4xl sm:text-5xl font-black uppercase font-display text-white mt-2">
             YouTube Fitness Videos
           </h1>
@@ -32,7 +32,7 @@ export default function VideosPage() {
 
         {/* Featured Video Player Box */}
         {activeVideo && (
-          <div className="bg-gym-card rounded-2xl border border-gym-border overflow-hidden mb-12 shadow-2xl">
+          <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] overflow-hidden mb-12 shadow-2xl">
             <div className="aspect-video w-full bg-black">
               <iframe
                 src={`https://www.youtube.com/embed/${activeVideo.youtube_id}?rel=0&modestbranding=1`}
@@ -42,9 +42,9 @@ export default function VideosPage() {
                 className="w-full h-full border-0"
               />
             </div>
-            <div className="p-6 bg-gym-charcoal flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="p-6 bg-[#0A1128] flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <span className="text-xs uppercase font-bold text-gym-red tracking-wider">{activeVideo.category}</span>
+                <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">{activeVideo.category}</span>
                 <h3 className="text-xl font-bold uppercase font-display text-white mt-1">{activeVideo.title}</h3>
                 <p className="text-xs text-zinc-400 mt-2 max-w-3xl leading-relaxed">{activeVideo.description}</p>
               </div>
@@ -52,7 +52,7 @@ export default function VideosPage() {
                 href={activeVideo.youtube_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-lg bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider shrink-0 inline-flex items-center space-x-1.5 transition-colors"
+                className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white text-xs font-bold uppercase tracking-wider shrink-0 inline-flex items-center space-x-1.5 transition-colors"
               >
                 <span>Open in YouTube</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -62,7 +62,7 @@ export default function VideosPage() {
         )}
 
         {/* Search & Categories */}
-        <div className="bg-gym-card p-6 rounded-2xl border border-gym-border mb-8 shadow-xl">
+        <div className="bg-[#101B37] p-6 rounded-2xl border border-[#1E305C] mb-8 shadow-xl">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="relative flex-grow">
               <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
@@ -71,7 +71,7 @@ export default function VideosPage() {
                 placeholder="Search fitness tutorials..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-gym-charcoal border border-gym-border text-white text-xs placeholder-zinc-500 focus:border-gym-red focus:outline-none"
+                className="w-full pl-11 pr-4 py-2.5 rounded-xl bg-[#0A1128] border border-[#1E305C] text-white text-xs placeholder-zinc-500 focus:border-[#D4AF37] focus:outline-none"
               />
             </div>
           </div>
@@ -83,8 +83,8 @@ export default function VideosPage() {
                 onClick={() => setActiveCategory(c)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                   activeCategory === c
-                    ? 'bg-gym-red text-white'
-                    : 'bg-gym-charcoal text-zinc-400 hover:text-white border border-gym-border'
+                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black'
+                    : 'bg-[#0A1128] text-zinc-400 hover:text-white border border-[#1E305C]'
                 }`}
               >
                 {c === 'all' ? 'All Videos' : c}
@@ -102,12 +102,12 @@ export default function VideosPage() {
                 setActiveVideo(video);
                 window.scrollTo({ top: 250, behavior: 'smooth' });
               }}
-              className={`bg-gym-card rounded-xl border ${
-                activeVideo?.id === video.id ? 'border-gym-red shadow-lg shadow-red-950/40' : 'border-gym-border'
-              } overflow-hidden hover:border-gym-red/60 transition-all cursor-pointer group flex flex-col justify-between`}
+              className={`bg-[#101B37] rounded-xl border ${
+                activeVideo?.id === video.id ? 'border-[#D4AF37] shadow-lg shadow-black/40' : 'border-[#1E305C]'
+              } overflow-hidden hover:border-[#D4AF37]/60 transition-all cursor-pointer group flex flex-col justify-between`}
             >
               <div>
-                <div className="aspect-video relative overflow-hidden bg-gym-charcoal">
+                <div className="aspect-video relative overflow-hidden bg-[#0A1128]">
                   <img
                     src={`https://img.youtube.com/vi/${video.youtube_id}/mqdefault.jpg`}
                     alt={video.title}
@@ -120,7 +120,7 @@ export default function VideosPage() {
 
                 <div className="p-4">
                   <span className="text-[10px] uppercase font-bold text-gym-silver">{video.category}</span>
-                  <h4 className="text-xs font-bold text-white uppercase font-display mt-1 line-clamp-2 group-hover:text-gym-red transition-colors">
+                  <h4 className="text-xs font-bold text-white uppercase font-display mt-1 line-clamp-2 group-hover:text-[#D4AF37] transition-colors">
                     {video.title}
                   </h4>
                   <p className="text-[11px] text-zinc-400 mt-1 line-clamp-2">
@@ -129,7 +129,7 @@ export default function VideosPage() {
                 </div>
               </div>
 
-              <div className="p-4 pt-0 text-[10px] text-gym-red font-bold uppercase tracking-wider">
+              <div className="p-4 pt-0 text-[10px] text-[#D4AF37] font-bold uppercase tracking-wider">
                 Tap to Watch
               </div>
             </div>
@@ -139,3 +139,5 @@ export default function VideosPage() {
     </div>
   );
 }
+
+

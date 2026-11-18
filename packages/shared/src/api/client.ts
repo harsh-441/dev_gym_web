@@ -16,6 +16,7 @@ import {
   Profile,
   ProgressRecord,
   StaffAttendance,
+  Trainer,
   UserRole,
   WorkoutProgram,
   YouTubeVideo,
@@ -47,6 +48,18 @@ class GymDataStore {
   dietPlans: DietPlan[] = [...INITIAL_DIET_PLANS];
   workoutPrograms: WorkoutProgram[] = [...INITIAL_WORKOUT_PROGRAMS];
   youtubeVideos: YouTubeVideo[] = [...INITIAL_YOUTUBE_VIDEOS];
+
+  // Passwords store for credentials
+  passwords: Record<string, string> = {
+    'dave@parshuramgym.com': 'DaveAdmin2026!',
+    'vikram@parshuramgym.com': 'VikramTrainer2026!',
+    'priya@parshuramgym.com': 'PriyaCoach2026!',
+    'amit@parshuramgym.com': 'AmitStaff2026!',
+    'rahul@example.com': 'RahulMember2026!',
+    'sneha@example.com': 'SnehaMember2026!'
+  };
+
+  trainers: Trainer[] = [...INITIAL_TRAINERS];
 
   // Users, Members & Employees
   profiles: Profile[] = [
@@ -735,7 +748,41 @@ export class GymApiClient {
   }
 
   async getTrainers() {
-    return INITIAL_TRAINERS;
+    return this.getPublicCoaches();
+  }
+
+  async getPublicCoaches() {
+    // Only return coaches who are currently active and approved (not inactive or archived)
+    const activeStaff = this.store.employees.filter((e) => e.status === 'active');
+    
+    return activeStaff.map((emp) => {
+      const prof = this.store.profiles.find((p) => p.id === emp.profile_id);
+      const existingTrainer = this.store.trainers.find((t) => t.employee_id === emp.id);
+      
+      const isDave = emp.id === 'emp-dave' || prof?.role === 'super_admin';
+      const defaultPhoto = isDave
+        ? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'
+        : 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=600&q=80';
+
+      return {
+        id: existingTrainer?.id || `tr-${emp.id}`,
+        employee_id: emp.id,
+        employee: emp,
+        specializations: existingTrainer?.specializations || [
+          'Strength & Conditioning',
+          'Biomechanical Progression',
+          'Functional Movement'
+        ],
+        certifications: existingTrainer?.certifications || [
+          'Certified Strength Specialist',
+          'CPR & First Aid'
+        ],
+        experience_years: existingTrainer?.experience_years || 5,
+        bio: existingTrainer?.bio || `${prof?.full_name || 'Coach'} is an elite trainer at Parshuram Fitness Gym dedicated to disciplined athletic development.`,
+        rating: existingTrainer?.rating || 4.9,
+        photo_url: existingTrainer?.photo_url || prof?.avatar_url || defaultPhoto
+      };
+    });
   }
 
   async submitEnquiry(enquiry: Omit<Enquiry, 'id' | 'status' | 'created_at'>) {

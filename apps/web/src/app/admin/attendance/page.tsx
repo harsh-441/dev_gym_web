@@ -112,9 +112,9 @@ export default function AdminAttendancePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gym-card p-6 rounded-2xl border border-gym-border shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#101B37] p-6 rounded-2xl border border-[#1E305C] shadow-xl">
         <div>
-          <span className="text-xs uppercase font-bold text-gym-red tracking-wider">Module C</span>
+          <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">Module C</span>
           <h1 className="text-2xl font-black uppercase font-display text-white mt-0.5">
             Attendance &amp; Live QR Terminal
           </h1>
@@ -126,7 +126,7 @@ export default function AdminAttendancePage() {
         <div className="flex items-center space-x-2.5">
           <button
             onClick={handleExportCSV}
-            className="px-3.5 py-2.5 rounded-xl bg-gym-charcoal hover:bg-zinc-800 border border-gym-border text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5"
+            className="px-3.5 py-2.5 rounded-xl bg-[#0A1128] hover:bg-zinc-800 border border-[#1E305C] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5"
           >
             <Download className="w-4 h-4 text-gym-silver" />
             <span>Export CSV</span>
@@ -135,20 +135,20 @@ export default function AdminAttendancePage() {
       </div>
 
       {/* QR Control & Terminal Display */}
-      <div className="bg-gym-card rounded-2xl border border-gym-red/50 p-6 shadow-xl">
+      <div className="bg-[#101B37] rounded-2xl border border-[#D4AF37]/50 p-6 shadow-xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-4 flex flex-col items-center text-center">
-            <div className="p-4 bg-white rounded-2xl shadow-xl border-4 border-gym-red inline-block mb-3">
+            <div className="p-4 bg-white rounded-2xl shadow-xl border-4 border-[#D4AF37] inline-block mb-3">
               <QrCode className="w-40 h-40 text-black" />
             </div>
-            <span className="text-[10px] font-mono font-bold text-gym-silver bg-gym-black px-3 py-1 rounded border border-gym-border">
+            <span className="text-[10px] font-mono font-bold text-gym-silver bg-[#050B17] px-3 py-1 rounded border border-[#1E305C]">
               TOKEN: {qrSession?.token}
             </span>
           </div>
 
-          <div className="lg:col-span-8 space-y-4 border-t lg:border-t-0 lg:border-l border-gym-border pt-6 lg:pt-0 lg:pl-8 text-xs">
+          <div className="lg:col-span-8 space-y-4 border-t lg:border-t-0 lg:border-l border-[#1E305C] pt-6 lg:pt-0 lg:pl-8 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs uppercase font-bold text-gym-red tracking-wider">
+              <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">
                 Front Entrance Terminal Controller
               </span>
               <span className="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold uppercase">
@@ -160,7 +160,7 @@ export default function AdminAttendancePage() {
               Display this QR terminal at the Parshuram Gym reception desk. Members scan with the Member Mobile App to mark their <strong>100% free</strong> gym visit. Employees scan with the Employee App to begin/end their shift.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gym-charcoal p-4 rounded-xl border border-gym-border">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#0A1128] p-4 rounded-xl border border-[#1E305C]">
               <div>
                 <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">
                   Token Validity Window (Seconds)
@@ -168,7 +168,7 @@ export default function AdminAttendancePage() {
                 <select
                   value={qrDuration}
                   onChange={(e) => setQrDuration(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-black border border-gym-border text-white text-xs focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#050B17] border border-[#1E305C] text-white text-xs focus:border-[#D4AF37] focus:outline-none"
                 >
                   <option value={30}>30 Seconds (Strict Security)</option>
                   <option value={60}>60 Seconds (Recommended)</option>
@@ -180,7 +180,7 @@ export default function AdminAttendancePage() {
                 <button
                   onClick={handleRefreshQR}
                   disabled={refreshing}
-                  className="w-full py-2.5 rounded-lg bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-1.5 shadow-md shadow-red-950/60"
+                  className="w-full py-2.5 rounded-lg bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-1.5 shadow-md shadow-black/60"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
                   <span>Generate New QR Token</span>
@@ -197,12 +197,12 @@ export default function AdminAttendancePage() {
       </div>
 
       {/* Tabs for Member vs Staff Attendance */}
-      <div className="flex border-b border-gym-border">
+      <div className="flex border-b border-[#1E305C]">
         <button
           onClick={() => setActiveTab('members')}
           className={`py-3 px-6 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
             activeTab === 'members'
-              ? 'border-gym-red text-gym-red'
+              ? 'border-[#D4AF37] text-[#D4AF37]'
               : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
@@ -212,7 +212,7 @@ export default function AdminAttendancePage() {
           onClick={() => setActiveTab('staff')}
           className={`py-3 px-6 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
             activeTab === 'staff'
-              ? 'border-gym-red text-gym-red'
+              ? 'border-[#D4AF37] text-[#D4AF37]'
               : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
@@ -221,10 +221,10 @@ export default function AdminAttendancePage() {
       </div>
 
       {/* Attendance Records Table */}
-      <div className="bg-gym-card rounded-2xl border border-gym-border overflow-hidden shadow-xl">
+      <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-gym-charcoal text-zinc-400 uppercase font-bold text-[10px] border-b border-gym-border">
+            <thead className="bg-[#0A1128] text-zinc-400 uppercase font-bold text-[10px] border-b border-[#1E305C]">
               {activeTab === 'members' ? (
                 <tr>
                   <th className="py-3.5 px-4">Member Name</th>
@@ -253,7 +253,7 @@ export default function AdminAttendancePage() {
                     : null;
 
                   return (
-                    <tr key={rec.id} className="hover:bg-gym-charcoal/40 transition-colors">
+                    <tr key={rec.id} className="hover:bg-[#0A1128]/40 transition-colors">
                       <td className="py-3.5 px-4">
                         <span className="font-bold text-white block">{profile?.full_name || 'Member'}</span>
                         <span className="text-[10px] text-zinc-400">{profile?.email}</span>
@@ -262,7 +262,7 @@ export default function AdminAttendancePage() {
                         {new Date(rec.check_in_time).toLocaleString()}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="text-[10px] font-bold uppercase text-gym-silver bg-gym-charcoal px-2 py-0.5 rounded border border-gym-border">
+                        <span className="text-[10px] font-bold uppercase text-gym-silver bg-[#0A1128] px-2 py-0.5 rounded border border-[#1E305C]">
                           {rec.check_in_method}
                         </span>
                       </td>
@@ -274,7 +274,7 @@ export default function AdminAttendancePage() {
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => handleOpenCorrection(rec)}
-                          className="px-2.5 py-1 rounded bg-gym-charcoal border border-gym-border text-zinc-300 hover:text-white text-[11px] font-semibold"
+                          className="px-2.5 py-1 rounded bg-[#0A1128] border border-[#1E305C] text-zinc-300 hover:text-white text-[11px] font-semibold"
                         >
                           Manual Correction
                         </button>
@@ -290,7 +290,7 @@ export default function AdminAttendancePage() {
                     : null;
 
                   return (
-                    <tr key={rec.id} className="hover:bg-gym-charcoal/40 transition-colors">
+                    <tr key={rec.id} className="hover:bg-[#0A1128]/40 transition-colors">
                       <td className="py-3.5 px-4">
                         <span className="font-bold text-white block">{profile?.full_name || 'Staff Member'}</span>
                         <span className="text-[10px] text-zinc-400">{emp?.designation}</span>
@@ -305,14 +305,14 @@ export default function AdminAttendancePage() {
                         {rec.shift_hours ? `${rec.shift_hours} hrs` : 'Active'}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="text-[10px] font-bold uppercase text-gym-silver bg-gym-charcoal px-2 py-0.5 rounded border border-gym-border">
+                        <span className="text-[10px] font-bold uppercase text-gym-silver bg-[#0A1128] px-2 py-0.5 rounded border border-[#1E305C]">
                           {rec.status}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => handleOpenCorrection(rec)}
-                          className="px-2.5 py-1 rounded bg-gym-charcoal border border-gym-border text-zinc-300 hover:text-white text-[11px] font-semibold"
+                          className="px-2.5 py-1 rounded bg-[#0A1128] border border-[#1E305C] text-zinc-300 hover:text-white text-[11px] font-semibold"
                         >
                           Manual Correction
                         </button>
@@ -329,8 +329,8 @@ export default function AdminAttendancePage() {
       {/* Attendance Correction Modal with Audit Log */}
       {showCorrectionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-gym-card border border-gym-border rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-gym-border pb-3 mb-4">
+          <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
               <h3 className="text-base font-bold uppercase font-display text-white">
                 Authorized Attendance Correction
               </h3>
@@ -340,7 +340,7 @@ export default function AdminAttendancePage() {
             </div>
 
             <form onSubmit={handleSaveCorrection} className="space-y-4 text-xs">
-              <div className="bg-gym-charcoal p-3 rounded-lg border border-gym-border">
+              <div className="bg-[#0A1128] p-3 rounded-lg border border-[#1E305C]">
                 <p className="text-zinc-300">
                   Target Record: <span className="font-bold text-white">{correctionTarget?.id}</span>
                 </p>
@@ -356,7 +356,7 @@ export default function AdminAttendancePage() {
                   required
                   value={newCheckInTime ? new Date(newCheckInTime).toISOString().slice(0, 16) : ''}
                   onChange={(e) => setNewCheckInTime(new Date(e.target.value).toISOString())}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
@@ -368,14 +368,14 @@ export default function AdminAttendancePage() {
                   placeholder="e.g. Member phone ran out of battery at turnstile; verified by front desk..."
                   value={correctionReason}
                   onChange={(e) => setCorrectionReason(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white placeholder-zinc-500 focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white placeholder-zinc-500 focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
               <div className="pt-2 flex items-center space-x-2">
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase tracking-wider transition-colors"
+                  className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase tracking-wider transition-colors"
                 >
                   Save &amp; Log Audit Record
                 </button>
@@ -387,3 +387,5 @@ export default function AdminAttendancePage() {
     </div>
   );
 }
+
+

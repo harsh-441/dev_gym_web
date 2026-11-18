@@ -5,11 +5,11 @@
 @tailwind utilities;
 
 :root {
-  --gym-black: #080808;
-  --gym-charcoal: #121212;
-  --gym-card: #181818;
-  --gym-red: #E02025;
-  --gym-silver: #D4D4D8;
+  --gym-navy: #0A1128;
+  --gym-navy-dark: #050B17;
+  --gym-navy-card: #101B37;
+  --gym-gold: #D4AF37;
+  --gym-silver: #CBD5E1;
 }
 
 html {
@@ -17,7 +17,7 @@ html {
 }
 
 body {
-  background-color: #080808;
+  background-color: #050B17;
   color: #FFFFFF;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
@@ -33,36 +33,37 @@ h1, h2, h3, h4, .font-display {
 
 /* Metallic silver text gradient */
 .text-metallic {
-  background: linear-gradient(135deg, #FFFFFF 0%, #D4D4D8 45%, #A1A1AA 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 45%, #94A3B8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Crimson brand text gradient */
-.text-crimson {
-  background: linear-gradient(135deg, #FF3B42 0%, #E02025 50%, #B31317 100%);
+/* Subtle Champagne Gold text gradient */
+.text-gold, .text-crimson {
+  background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 55%, #AA820A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Athletic Red Glow */
-.glow-red {
-  box-shadow: 0 0 30px rgba(224, 32, 37, 0.4);
+/* Soft Gold Glow */
+.glow-gold, .glow-red {
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
 }
 
-.glow-red-sm {
-  box-shadow: 0 0 14px rgba(224, 32, 37, 0.25);
+.glow-gold-sm, .glow-red-sm {
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
 }
 
+/* Deep Navy Glassmorphism Card */
 .card-glass {
-  background: rgba(24, 24, 24, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(16, 27, 55, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(203, 213, 225, 0.12);
 }
 
 .card-glass:hover {
-  border-color: rgba(224, 32, 37, 0.35);
+  border-color: rgba(212, 175, 55, 0.45);
 }
 
 /* Custom dark scrollbar */
@@ -71,12 +72,12 @@ h1, h2, h3, h4, .font-display {
   height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #080808;
+  background: #050B17;
 }
 ::-webkit-scrollbar-thumb {
-  background: #282828;
+  background: #1E305C;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #E02025;
+  background: #334B85;
 }

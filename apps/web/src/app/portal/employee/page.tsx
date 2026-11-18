@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   UserCheck,
   CalendarCheck,
@@ -11,16 +12,19 @@ import {
   AlertCircle,
   Plus,
   Send,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { api, BRAND, StaffAttendance, LeaveApplication, validateLeaveApplication } from '@parshuram/shared';
 
 export default function EmployeePortalPage() {
-  const [employee, setEmployee] = useState<any>((api as any).store.employees[1]); // Coach Vikram
-  const [profile, setProfile] = useState<any>((api as any).store.profiles.find((p: any) => p.id === (api as any).store.employees[1]?.profile_id));
-  const [staffAttendance, setStaffAttendance] = useState<StaffAttendance[]>([...(api as any).store.staffAttendance]);
-  const [leaves, setLeaves] = useState<LeaveApplication[]>([...(api as any).store.leaveApplications]);
-  const [leaveTypes, setLeaveTypes] = useState<any[]>([...(api as any).store.leaveTypes]);
+  const router = useRouter();
+  const [profile, setProfile] = useState<any>(null);
+  const [employee, setEmployee] = useState<any>(null);
+  const [staffAttendance, setStaffAttendance] = useState<StaffAttendance[]>([]);
+  const [leaves, setLeaves] = useState<LeaveApplication[]>([]);
+  const [leaveTypes, setLeaveTypes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Check in/out state
   const [clockLoading, setClockLoading] = useState(false);
@@ -36,11 +40,65 @@ export default function EmployeePortalPage() {
   const [leaveSubmitting, setLeaveSubmitting] = useState(false);
   const [leaveSuccess, setLeaveSuccess] = useState(false);
 
+  useEffect(() => {
+    const userEmail = localStorage.getItem('pfg_user_email');
+    if (!userEmail) {
+      router.push('/auth/login');
+      return;
+    }
+
+    const loadStaffData = async () => {
+      try {
+        const res = await fetch(`/api/auth/me?email=${encodeURIComponent(userEmail)}`);
+        const data = await res.json();
+
+        setLeaveTypes([...(api as any).store.leaveTypes]);
+
+        if (data.success && data.profile) {
+          setProfile(data.profile);
+          setEmployee(data.employee);
+
+          const allStaffAtt: StaffAttendance[] = (api as any).store.staffAttendance;
+          const allLeaves: LeaveApplication[] = (api as any).store.leaveApplications;
+
+          if (data.employee) {
+            setStaffAttendance(allStaffAtt.filter((a) => a.employee_id === data.employee.id));
+            setLeaves(allLeaves.filter((l) => l.employee_id === data.employee.id));
+          } else {
+            setStaffAttendance(allStaffAtt);
+            setLeaves(allLeaves);
+          }
+        } else {
+          // Fallback to first trainer
+          setProfile((api as any).store.profiles.find((p: any) => p.role === 'trainer'));
+          setEmployee((api as any).store.employees[1]);
+          setStaffAttendance([...(api as any).store.staffAttendance]);
+          setLeaves([...(api as any).store.leaveApplications]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStaffData();
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('pfg_user_token');
+    localStorage.removeItem('pfg_user_email');
+    localStorage.removeItem('pfg_user_role');
+    localStorage.removeItem('pfg_user_name');
+    router.push('/auth/login');
+  };
+
   const activeShift = staffAttendance.find(
-    (a) => a.employee_id === employee.id && !a.check_out_time
+    (a) => employee && a.employee_id === employee.id && !a.check_out_time
   );
 
   const handleClockIn = async () => {
+    if (!employee) return;
     setClockLoading(true);
     setClockMessage(null);
     try {
@@ -58,7 +116,8 @@ export default function EmployeePortalPage() {
       const data = await res.json();
       if (res.ok) {
         setClockMessage(data.message);
-        setStaffAttendance([...(api as any).store.staffAttendance]);
+        const allAtt: StaffAttendance[] = (api as any).store.staffAttendance;
+        setStaffAttendance(allAtt.filter((a) => a.employee_id === employee.id));
       } else {
         setClockMessage(data.error);
       }
@@ -70,6 +129,7 @@ export default function EmployeePortalPage() {
   };
 
   const handleClockOut = async () => {
+    if (!employee) return;
     setClockLoading(true);
     setClockMessage(null);
     try {
@@ -81,7 +141,8 @@ export default function EmployeePortalPage() {
       const data = await res.json();
       if (res.ok) {
         setClockMessage(data.message);
-        setStaffAttendance([...(api as any).store.staffAttendance]);
+        const allAtt: StaffAttendance[] = (api as any).store.staffAttendance;
+        setStaffAttendance(allAtt.filter((a) => a.employee_id === employee.id));
       } else {
         setClockMessage(data.error);
       }
@@ -94,6 +155,7 @@ export default function EmployeePortalPage() {
 
   const handleApplyLeave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!employee) return;
     setLeaveErrors({});
     setLeaveSuccess(false);
 
@@ -127,7 +189,8 @@ export default function EmployeePortalPage() {
       const data = await res.json();
       if (res.ok) {
         setLeaveSuccess(true);
-        setLeaves([...(api as any).store.leaveApplications]);
+        const allLeaves: LeaveApplication[] = (api as any).store.leaveApplications;
+        setLeaves(allLeaves.filter((l) => l.employee_id === employee.id));
         setReason('');
         setTimeout(() => setShowLeaveModal(false), 1200);
       } else {
@@ -140,47 +203,65 @@ export default function EmployeePortalPage() {
     }
   };
 
-  const myLeaves = leaves.filter((l) => l.employee_id === employee.id);
+  if (loading) {
+    return (
+      <div className="bg-[#050B17] min-h-screen flex items-center justify-center text-white">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-xs uppercase font-bold text-slate-400">Loading Staff Terminal...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-gym-black min-h-screen py-10 px-4 sm:px-6 lg:px-8 text-white">
+    <div className="bg-[#050B17] min-h-screen py-10 px-4 sm:px-6 lg:px-8 text-white">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Greeting */}
-        <div className="bg-gym-card rounded-2xl border border-gym-border p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
+        <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gym-charcoal via-zinc-800 to-gym-black flex items-center justify-center font-black text-2xl text-white border border-gym-silver shadow-lg">
-              {profile?.full_name?.charAt(0) || 'V'}
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1E305C] via-[#101B37] to-[#0A1128] border border-[#D4AF37] flex items-center justify-center font-black text-2xl text-[#D4AF37] shadow-lg">
+              {profile?.full_name?.charAt(0) || 'S'}
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-gym-silver tracking-widest">
+              <span className="text-[10px] uppercase font-bold text-[#D4AF37] tracking-widest">
                 Parshuram Staff &amp; Coach Terminal
               </span>
               <h1 className="text-2xl sm:text-3xl font-black uppercase font-display text-white mt-0.5">
-                {profile?.full_name || 'Vikram Rathore'}
+                {profile?.full_name || 'Staff Member'}
               </h1>
-              <p className="text-xs text-zinc-400 mt-1">
-                {employee?.designation} • Department: {employee?.department}
+              <p className="text-xs text-slate-300 mt-1">
+                {employee?.designation || 'Strength Coach'} • Department: {employee?.department || 'Fitness Training'} • Status: <span className="text-emerald-400 font-bold uppercase">{employee?.status || 'Active'}</span>
               </p>
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              setShowLeaveModal(true);
-              setLeaveSuccess(false);
-            }}
-            className="px-4 py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5 shadow-md shadow-red-950/60 shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Apply For Leave</span>
-          </button>
+          <div className="flex items-center space-x-3 shrink-0">
+            <button
+              onClick={() => {
+                setShowLeaveModal(true);
+                setLeaveSuccess(false);
+              }}
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] hover:from-[#E5C158] hover:to-[#D4AF37] text-[#050B17] text-xs font-black uppercase tracking-wider transition-all flex items-center space-x-1.5 shadow-md shadow-black/50"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Apply For Leave</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2.5 rounded-xl bg-[#0A1128] hover:bg-red-950/40 border border-[#1E305C] text-red-300 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </button>
+          </div>
         </div>
 
         {/* Staff Shift Clock In / Clock Out Card */}
-        <div className="bg-gym-card rounded-2xl border border-gym-border p-6 sm:p-8 shadow-2xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gym-border pb-4 mb-6">
+        <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 sm:p-8 shadow-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1E305C] pb-4 mb-6">
             <div>
-              <span className="text-xs uppercase font-bold text-gym-silver">Daily Shift Tracker</span>
+              <span className="text-xs uppercase font-bold text-[#D4AF37]">Daily Shift Tracker</span>
               <h3 className="text-xl font-black uppercase font-display text-white mt-0.5">
                 Today&apos;s Work Shift Status
               </h3>
@@ -188,8 +269,8 @@ export default function EmployeePortalPage() {
             <div>
               <span className={`text-xs font-bold uppercase px-3 py-1.5 rounded-full border ${
                 activeShift
-                  ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
-                  : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                  ? 'bg-emerald-950/60 text-emerald-300 border-emerald-600'
+                  : 'bg-slate-900 text-slate-400 border-slate-700'
               }`}>
                 {activeShift ? 'Currently Shift Active' : 'Off Shift / Checked Out'}
               </span>
@@ -198,7 +279,7 @@ export default function EmployeePortalPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div>
-              <p className="text-xs text-zinc-300 leading-relaxed mb-4">
+              <p className="text-xs text-slate-300 leading-relaxed mb-4">
                 Staff and coach attendance is strictly recorded on the server with exact check-in and check-out timestamps to compute daily work duration. Member gym visits and staff shifts are maintained in distinct database tables.
               </p>
 
@@ -216,7 +297,7 @@ export default function EmployeePortalPage() {
                   <button
                     onClick={handleClockOut}
                     disabled={clockLoading}
-                    className="px-6 py-3 rounded-xl bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase tracking-wider text-xs transition-colors flex items-center space-x-2 shadow-lg disabled:opacity-50"
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] hover:from-[#E5C158] hover:to-[#D4AF37] text-[#050B17] font-black uppercase tracking-wider text-xs transition-all flex items-center space-x-2 shadow-lg disabled:opacity-50"
                   >
                     <Clock className="w-4 h-4" />
                     <span>{clockLoading ? 'Recording...' : 'Clock Out (End Shift)'}</span>
@@ -225,17 +306,17 @@ export default function EmployeePortalPage() {
               </div>
 
               {clockMessage && (
-                <p className="text-xs text-gym-silver mt-3 bg-gym-charcoal p-2.5 rounded-lg border border-gym-border">
+                <p className="text-xs text-[#CBD5E1] mt-3 bg-[#0A1128] p-2.5 rounded-lg border border-[#1E305C]">
                   {clockMessage}
                 </p>
               )}
             </div>
 
-            <div className="bg-gym-charcoal p-5 rounded-xl border border-gym-border text-xs space-y-2">
+            <div className="bg-[#0A1128] p-5 rounded-xl border border-[#1E305C] text-xs space-y-2">
               <span className="font-bold uppercase text-white block mb-1">Standard Shift Schedule</span>
-              <p className="text-zinc-300">Morning Shift: 05:30 AM – 01:30 PM</p>
-              <p className="text-zinc-300">Evening Shift: 02:30 PM – 10:30 PM</p>
-              <p className="text-[11px] text-zinc-400 pt-1 border-t border-gym-border">
+              <p className="text-slate-300">Morning Shift: 05:30 AM – 01:30 PM</p>
+              <p className="text-slate-300">Evening Shift: 02:30 PM – 10:30 PM</p>
+              <p className="text-[11px] text-slate-400 pt-1 border-t border-[#1E305C]">
                 Late threshold: 15 minutes. Supervised directly by Dave.
               </p>
             </div>
@@ -243,20 +324,20 @@ export default function EmployeePortalPage() {
         </div>
 
         {/* Leave Applications History */}
-        <div className="bg-gym-card rounded-2xl border border-gym-border p-6 shadow-xl">
-          <div className="flex items-center justify-between mb-4 border-b border-gym-border pb-3">
+        <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 shadow-xl">
+          <div className="flex items-center justify-between mb-4 border-b border-[#1E305C] pb-3">
             <h3 className="text-lg font-bold uppercase font-display text-white">
               My Leave Applications &amp; Status
             </h3>
-            <span className="text-xs text-zinc-400">Authoritative Supabase Record</span>
+            <span className="text-xs text-slate-400">Database Record</span>
           </div>
 
-          {myLeaves.length === 0 ? (
-            <p className="text-xs text-zinc-400 py-6 text-center">No leave applications submitted yet.</p>
+          {leaves.length === 0 ? (
+            <p className="text-xs text-slate-400 py-6 text-center">No leave applications submitted yet.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-gym-charcoal text-zinc-400 uppercase font-bold text-[10px] border-b border-gym-border">
+                <thead className="bg-[#0A1128] text-slate-400 uppercase font-bold text-[10px] border-b border-[#1E305C]">
                   <tr>
                     <th className="py-3 px-4">Dates</th>
                     <th className="py-3 px-4">Leave Type</th>
@@ -265,26 +346,26 @@ export default function EmployeePortalPage() {
                     <th className="py-3 px-4">Decision</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gym-border">
-                  {myLeaves.map((leave) => (
-                    <tr key={leave.id} className="hover:bg-gym-charcoal/50">
+                <tbody className="divide-y divide-[#1E305C]">
+                  {leaves.map((leave) => (
+                    <tr key={leave.id} className="hover:bg-[#0A1128]/50">
                       <td className="py-3 px-4 text-white font-semibold">
                         {leave.start_date} to {leave.end_date}
                       </td>
-                      <td className="py-3 px-4 text-gym-silver">
+                      <td className="py-3 px-4 text-[#D4AF37]">
                         {leaveTypes.find((lt) => lt.id === leave.leave_type_id)?.name || 'Casual'}
                       </td>
-                      <td className="py-3 px-4 text-zinc-300 max-w-xs">{leave.reason}</td>
-                      <td className="py-3 px-4 text-zinc-400 italic">
+                      <td className="py-3 px-4 text-slate-300 max-w-xs">{leave.reason}</td>
+                      <td className="py-3 px-4 text-slate-400 italic">
                         {leave.admin_note || 'Awaiting Dave review...'}
                       </td>
                       <td className="py-3 px-4">
                         <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full border ${
                           leave.status === 'approved'
-                            ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
+                            ? 'bg-emerald-950/60 text-emerald-300 border-emerald-700'
                             : leave.status === 'rejected'
-                            ? 'bg-red-950 text-red-300 border-red-700'
-                            : 'bg-amber-950 text-amber-300 border-amber-700'
+                            ? 'bg-red-950/60 text-red-300 border-red-700'
+                            : 'bg-amber-950/60 text-amber-300 border-amber-700'
                         }`}>
                           {leave.status}
                         </span>
@@ -300,12 +381,12 @@ export default function EmployeePortalPage() {
         {/* Apply Leave Modal */}
         {showLeaveModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <div className="bg-gym-card border border-gym-border rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-              <div className="flex items-center justify-between border-b border-gym-border pb-3 mb-4">
+            <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+              <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
                 <h3 className="text-base font-bold uppercase font-display text-white">
                   Apply for Leave
                 </h3>
-                <button onClick={() => setShowLeaveModal(false)} className="text-zinc-400 hover:text-white">
+                <button onClick={() => setShowLeaveModal(false)} className="text-slate-400 hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -314,18 +395,18 @@ export default function EmployeePortalPage() {
                 <div className="bg-emerald-950/40 border border-emerald-600 rounded-xl p-6 text-center space-y-2">
                   <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
                   <h4 className="text-sm font-bold text-white">Leave Submitted to Dave!</h4>
-                  <p className="text-xs text-zinc-300">
+                  <p className="text-xs text-slate-300">
                     Application created with Pending status. Dave will review and notify you.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleApplyLeave} className="space-y-4 text-xs">
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Leave Category</label>
+                    <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Leave Category</label>
                     <select
                       value={leaveTypeId}
                       onChange={(e) => setLeaveTypeId(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                     >
                       {leaveTypes.map((lt) => (
                         <option key={lt.id} value={lt.id}>
@@ -337,46 +418,46 @@ export default function EmployeePortalPage() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Start Date</label>
+                      <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Start Date</label>
                       <input
                         type="date"
                         required
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                       />
-                      {leaveErrors.startDate && <p className="text-[10px] text-gym-red mt-0.5">{leaveErrors.startDate}</p>}
+                      {leaveErrors.startDate && <p className="text-[10px] text-red-400 mt-0.5">{leaveErrors.startDate}</p>}
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">End Date</label>
+                      <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">End Date</label>
                       <input
                         type="date"
                         required
                         value={endDate}
                         onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                        className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                       />
-                      {leaveErrors.endDate && <p className="text-[10px] text-gym-red mt-0.5">{leaveErrors.endDate}</p>}
+                      {leaveErrors.endDate && <p className="text-[10px] text-red-400 mt-0.5">{leaveErrors.endDate}</p>}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Reason for Leave</label>
+                    <label className="block text-[11px] font-bold uppercase text-slate-300 mb-1">Reason for Leave</label>
                     <textarea
                       rows={3}
                       required
                       placeholder="e.g. Attending family function in Jaipur, shift coverage arranged..."
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white placeholder-zinc-500 focus:border-gym-red focus:outline-none"
+                      className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white placeholder-slate-500 focus:border-[#D4AF37] focus:outline-none"
                     />
-                    {leaveErrors.reason && <p className="text-[10px] text-gym-red mt-0.5">{leaveErrors.reason}</p>}
+                    {leaveErrors.reason && <p className="text-[10px] text-red-400 mt-0.5">{leaveErrors.reason}</p>}
                   </div>
 
                   <button
                     type="submit"
                     disabled={leaveSubmitting}
-                    className="w-full py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase tracking-wider transition-colors disabled:opacity-50"
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] hover:from-[#E5C158] hover:to-[#D4AF37] text-[#050B17] font-black uppercase tracking-wider transition-all disabled:opacity-50"
                   >
                     {leaveSubmitting ? 'Submitting...' : 'Submit to Dave for Approval'}
                   </button>
@@ -389,3 +470,5 @@ export default function EmployeePortalPage() {
     </div>
   );
 }
+
+

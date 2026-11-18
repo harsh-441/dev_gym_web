@@ -30,11 +30,11 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="bg-gym-black text-white min-h-screen py-16">
+    <div className="bg-[#050B17] text-white min-h-screen py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-bold uppercase tracking-widest text-gym-red">The Story &amp; Vision</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">The Story &amp; Vision</span>
           <h1 className="text-4xl sm:text-5xl font-black uppercase font-display text-white mt-2">
             About {BRAND.name}
           </h1>
@@ -44,10 +44,10 @@ export default function AboutPage() {
         </div>
 
         {/* Founder Dave's Message */}
-        <div className="bg-gym-card rounded-2xl border border-gym-border p-8 sm:p-12 mb-16 shadow-2xl">
+        <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-8 sm:p-12 mb-16 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-4 flex flex-col items-center text-center">
-              <div className="w-40 h-40 rounded-2xl overflow-hidden border-2 border-gym-red shadow-xl mb-4">
+              <div className="w-40 h-40 rounded-2xl overflow-hidden border-2 border-[#D4AF37] shadow-xl mb-4">
                 <img
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80"
                   alt="Dave - Founder & Head Coach"
@@ -59,8 +59,8 @@ export default function AboutPage() {
               <span className="text-[11px] text-zinc-400 mt-1">CSCS Certified • 14+ Yrs In Iron</span>
             </div>
 
-            <div className="lg:col-span-8 space-y-4 text-zinc-300 text-sm leading-relaxed border-t lg:border-t-0 lg:border-l border-gym-border pt-6 lg:pt-0 lg:pl-8">
-              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded bg-gym-red/20 text-gym-red text-xs font-bold uppercase tracking-wider mb-2">
+            <div className="lg:col-span-8 space-y-4 text-zinc-300 text-sm leading-relaxed border-t lg:border-t-0 lg:border-l border-[#1E305C] pt-6 lg:pt-0 lg:pl-8">
+              <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black/20 text-[#D4AF37] text-xs font-bold uppercase tracking-wider mb-2">
                 <Award className="w-4 h-4" />
                 <span>Founder Message</span>
               </div>
@@ -89,8 +89,8 @@ export default function AboutPage() {
             {values.map((v, i) => {
               const Icon = v.icon;
               return (
-                <div key={i} className="bg-gym-card rounded-xl border border-gym-border p-6 hover:border-gym-red/50 transition-colors">
-                  <div className="w-12 h-12 rounded-lg bg-gym-black border border-gym-red/40 flex items-center justify-center text-gym-red mb-4">
+                <div key={i} className="bg-[#101B37] rounded-xl border border-[#1E305C] p-6 hover:border-[#D4AF37]/50 transition-colors">
+                  <div className="w-12 h-12 rounded-lg bg-[#050B17] border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] mb-4">
                     <Icon className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-bold text-white mb-2">{v.title}</h3>
@@ -102,7 +102,7 @@ export default function AboutPage() {
         </div>
 
         {/* CTA */}
-        <div className="text-center bg-gradient-to-r from-gym-charcoal via-gym-red/20 to-gym-charcoal p-10 rounded-xl border border-gym-border">
+        <div className="text-center bg-gradient-to-r from-[#0A1128] via-[#101B37] to-[#0A1128] p-10 rounded-xl border border-[#1E305C]">
           <h3 className="text-2xl font-black uppercase font-display text-white mb-3">
             Train With Purpose At Parshuram Gym
           </h3>
@@ -112,7 +112,7 @@ export default function AboutPage() {
           <div className="flex justify-center gap-4">
             <Link
               href="/pricing"
-              className="px-6 py-3 rounded-lg bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center"
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center"
             >
               <span>View Membership Plans</span>
               <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -123,3 +123,5 @@ export default function AboutPage() {
     </div>
   );
 }
+
+

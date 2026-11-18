@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Parshuram Fitness Gym",
+    "slug": "parshuram-fitness-gym",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#050B17"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.parshuramgym.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#050B17"
+      },
+      "package": "com.parshuramgym.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

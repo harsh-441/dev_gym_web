@@ -7,10 +7,10 @@ import { INITIAL_MEMBERSHIP_PLANS, BRAND } from '@parshuram/shared';
 
 export default function PricingPage() {
   return (
-    <div className="bg-gym-black text-white min-h-screen py-16">
+    <div className="bg-[#050B17] text-white min-h-screen py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-gym-red">Invest in Discipline</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">Invest in Discipline</span>
           <h1 className="text-4xl sm:text-5xl font-black uppercase font-display text-white mt-2">
             Membership Plans
           </h1>
@@ -21,14 +21,14 @@ export default function PricingPage() {
 
         {/* Free attendance & placeholder pricing banner */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-          <div className="bg-gym-card border border-emerald-500/40 rounded-xl p-4 flex items-center space-x-3 text-xs text-zinc-300">
+          <div className="bg-[#101B37] border border-emerald-500/40 rounded-xl p-4 flex items-center space-x-3 text-xs text-zinc-300">
             <ShieldCheck className="w-6 h-6 text-emerald-400 shrink-0" />
             <div>
               <span className="font-bold text-white block">Guaranteed Free Daily Attendance</span>
               Every member marks attendance via the QR scanner at zero extra cost. No per-visit fees, ever.
             </div>
           </div>
-          <div className="bg-gym-card border border-gym-border rounded-xl p-4 flex items-center space-x-3 text-xs text-zinc-300">
+          <div className="bg-[#101B37] border border-[#1E305C] rounded-xl p-4 flex items-center space-x-3 text-xs text-zinc-300">
             <HelpCircle className="w-6 h-6 text-gym-silver shrink-0" />
             <div>
               <span className="font-bold text-white block">Official Pricing Notice</span>
@@ -45,14 +45,14 @@ export default function PricingPage() {
             return (
               <div
                 key={plan.id}
-                className={`bg-gym-card rounded-2xl border ${
+                className={`bg-[#101B37] rounded-2xl border ${
                   isFeatured
-                    ? 'border-gym-red shadow-2xl shadow-red-950/40 relative'
-                    : 'border-gym-border'
-                } p-8 flex flex-col justify-between transition-all hover:border-gym-red/60`}
+                    ? 'border-[#D4AF37] shadow-2xl shadow-black/40 relative'
+                    : 'border-[#1E305C]'
+                } p-8 flex flex-col justify-between transition-all hover:border-[#D4AF37]/60`}
               >
                 {isFeatured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gym-red text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-md">
                     Most Popular Choice
                   </div>
                 )}
@@ -68,7 +68,7 @@ export default function PricingPage() {
                     </p>
                   </div>
 
-                  <div className="py-4 border-y border-gym-border mb-6">
+                  <div className="py-4 border-y border-[#1E305C] mb-6">
                     <div className="flex items-baseline">
                       <span className="text-3xl sm:text-4xl font-black font-display text-white">₹{plan.price.toLocaleString('en-IN')}</span>
                       <span className="text-xs text-zinc-400 ml-2">/ {plan.duration_months > 1 ? `${plan.duration_months} months` : 'month'}</span>
@@ -80,7 +80,7 @@ export default function PricingPage() {
                     <span className="text-[11px] font-bold uppercase tracking-wider text-gym-silver block">What&apos;s Included:</span>
                     {plan.features.map((feature, fIdx) => (
                       <div key={fIdx} className="flex items-start text-xs text-zinc-300">
-                        <Check className="w-4 h-4 text-gym-red mr-2 shrink-0 mt-0.5" />
+                        <Check className="w-4 h-4 text-[#D4AF37] mr-2 shrink-0 mt-0.5" />
                         <span>{feature}</span>
                       </div>
                     ))}
@@ -92,8 +92,8 @@ export default function PricingPage() {
                     href={`/contact?plan=${encodeURIComponent(plan.name)}`}
                     className={`w-full py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center space-x-1.5 ${
                       isFeatured
-                        ? 'bg-gym-red hover:bg-gym-redHover text-white shadow-lg shadow-red-950/60'
-                        : 'bg-gym-charcoal hover:bg-zinc-800 text-white border border-gym-border'
+                        ? 'bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white shadow-lg shadow-black/60'
+                        : 'bg-[#0A1128] hover:bg-zinc-800 text-white border border-[#1E305C]'
                     }`}
                   >
                     <span>Enquire for {plan.name}</span>
@@ -106,12 +106,12 @@ export default function PricingPage() {
         </div>
 
         {/* Corporate & Student Discounts */}
-        <div className="bg-gym-charcoal rounded-2xl border border-gym-border p-8 text-center max-w-3xl mx-auto">
+        <div className="bg-[#0A1128] rounded-2xl border border-[#1E305C] p-8 text-center max-w-3xl mx-auto">
           <h3 className="text-xl font-bold uppercase font-display text-white mb-2">Student &amp; First-Responder Concessions</h3>
           <p className="text-xs text-zinc-300 leading-relaxed max-w-xl mx-auto mb-4">
             We honor college students, martial artists, and police/armed personnel with special subsidized rates. Ask Dave during your visit with a valid ID card.
           </p>
-          <Link href="/contact" className="text-xs font-bold text-gym-red hover:underline uppercase tracking-wider">
+          <Link href="/contact" className="text-xs font-bold text-[#D4AF37] hover:underline uppercase tracking-wider">
             Contact Front Desk →
           </Link>
         </div>
@@ -119,3 +119,5 @@ export default function PricingPage() {
     </div>
   );
 }
+
+

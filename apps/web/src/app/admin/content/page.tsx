@@ -108,9 +108,9 @@ export default function AdminContentPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gym-card p-6 rounded-2xl border border-gym-border shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#101B37] p-6 rounded-2xl border border-[#1E305C] shadow-xl">
         <div>
-          <span className="text-xs uppercase font-bold text-gym-red tracking-wider">Module E</span>
+          <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">Module E</span>
           <h1 className="text-2xl font-black uppercase font-display text-white mt-0.5">
             Content &amp; Media Management
           </h1>
@@ -123,7 +123,7 @@ export default function AdminContentPage() {
           {activeTab === 'videos' && (
             <button
               onClick={() => setShowVideoModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5 shadow-md shadow-red-950/60"
+              className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5 shadow-md shadow-black/60"
             >
               <Plus className="w-4 h-4" />
               <span>Add YouTube URL</span>
@@ -132,7 +132,7 @@ export default function AdminContentPage() {
           {activeTab === 'exercises' && (
             <button
               onClick={() => setShowExerciseModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5 shadow-md shadow-red-950/60"
+              className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5 shadow-md shadow-black/60"
             >
               <Plus className="w-4 h-4" />
               <span>Add New Exercise</span>
@@ -142,11 +142,11 @@ export default function AdminContentPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gym-border overflow-x-auto">
+      <div className="flex border-b border-[#1E305C] overflow-x-auto">
         <button
           onClick={() => setActiveTab('exercises')}
           className={`py-3 px-5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 flex items-center space-x-2 ${
-            activeTab === 'exercises' ? 'border-gym-red text-gym-red' : 'border-transparent text-zinc-400 hover:text-white'
+            activeTab === 'exercises' ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
           <Dumbbell className="w-4 h-4" />
@@ -155,7 +155,7 @@ export default function AdminContentPage() {
         <button
           onClick={() => setActiveTab('diets')}
           className={`py-3 px-5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 flex items-center space-x-2 ${
-            activeTab === 'diets' ? 'border-gym-red text-gym-red' : 'border-transparent text-zinc-400 hover:text-white'
+            activeTab === 'diets' ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
           <Utensils className="w-4 h-4" />
@@ -164,7 +164,7 @@ export default function AdminContentPage() {
         <button
           onClick={() => setActiveTab('videos')}
           className={`py-3 px-5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 flex items-center space-x-2 ${
-            activeTab === 'videos' ? 'border-gym-red text-gym-red' : 'border-transparent text-zinc-400 hover:text-white'
+            activeTab === 'videos' ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
           <Video className="w-4 h-4" />
@@ -173,7 +173,7 @@ export default function AdminContentPage() {
         <button
           onClick={() => setActiveTab('programs')}
           className={`py-3 px-5 text-xs font-bold uppercase tracking-wider transition-all border-b-2 flex items-center space-x-2 ${
-            activeTab === 'programs' ? 'border-gym-red text-gym-red' : 'border-transparent text-zinc-400 hover:text-white'
+            activeTab === 'programs' ? 'border-[#D4AF37] text-[#D4AF37]' : 'border-transparent text-zinc-400 hover:text-white'
           }`}
         >
           <BookOpen className="w-4 h-4" />
@@ -185,10 +185,10 @@ export default function AdminContentPage() {
       {activeTab === 'exercises' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {exercises.map((ex) => (
-            <div key={ex.id} className="bg-gym-card p-5 rounded-2xl border border-gym-border flex flex-col justify-between">
+            <div key={ex.id} className="bg-[#101B37] p-5 rounded-2xl border border-[#1E305C] flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] uppercase font-bold text-gym-red px-2 py-0.5 rounded bg-gym-red/20 border border-gym-red/40">
+                  <span className="text-[10px] uppercase font-bold text-[#D4AF37] px-2 py-0.5 rounded bg-[#D4AF37] text-[#050B17]/20 border border-[#D4AF37]/40">
                     {ex.category}
                   </span>
                   <span className="text-[10px] text-zinc-400 uppercase font-semibold">{ex.difficulty}</span>
@@ -200,7 +200,7 @@ export default function AdminContentPage() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gym-border flex items-center justify-between mt-4">
+              <div className="pt-4 border-t border-[#1E305C] flex items-center justify-between mt-4">
                 <span className="text-xs text-zinc-400">{ex.sets} Sets × {ex.reps}</span>
                 <button
                   onClick={() => setExercises(exercises.filter((e) => e.id !== ex.id))}
@@ -218,16 +218,16 @@ export default function AdminContentPage() {
       {activeTab === 'diets' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {diets.map((diet) => (
-            <div key={diet.id} className="bg-gym-card p-5 rounded-2xl border border-gym-border flex flex-col justify-between">
+            <div key={diet.id} className="bg-[#101B37] p-5 rounded-2xl border border-[#1E305C] flex flex-col justify-between">
               <div>
                 <span className="text-[10px] uppercase font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-950 border border-emerald-800">
                   {diet.is_veg ? 'Vegetarian' : 'Non-Vegetarian'}
                 </span>
                 <h3 className="text-base font-bold text-white mt-2 mb-2">{diet.title}</h3>
                 <p className="text-xs text-zinc-400 leading-relaxed mb-4">{diet.description}</p>
-                <div className="bg-gym-charcoal p-3 rounded-lg border border-gym-border text-xs flex justify-between">
+                <div className="bg-[#0A1128] p-3 rounded-lg border border-[#1E305C] text-xs flex justify-between">
                   <span>{diet.calories} kcal</span>
-                  <span className="text-gym-red">{diet.protein_g}g Protein</span>
+                  <span className="text-[#D4AF37]">{diet.protein_g}g Protein</span>
                 </div>
               </div>
             </div>
@@ -239,9 +239,9 @@ export default function AdminContentPage() {
       {activeTab === 'videos' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {videos.map((vid) => (
-            <div key={vid.id} className="bg-gym-card rounded-xl border border-gym-border overflow-hidden flex flex-col justify-between">
+            <div key={vid.id} className="bg-[#101B37] rounded-xl border border-[#1E305C] overflow-hidden flex flex-col justify-between">
               <div>
-                <div className="aspect-video bg-gym-charcoal relative">
+                <div className="aspect-video bg-[#0A1128] relative">
                   <img
                     src={`https://img.youtube.com/vi/${vid.youtube_id}/mqdefault.jpg`}
                     alt={vid.title}
@@ -255,7 +255,7 @@ export default function AdminContentPage() {
               </div>
 
               <div className="p-4 pt-0 flex items-center justify-between text-xs">
-                <a href={vid.youtube_url} target="_blank" rel="noopener noreferrer" className="text-gym-red font-bold flex items-center">
+                <a href={vid.youtube_url} target="_blank" rel="noopener noreferrer" className="text-[#D4AF37] font-bold flex items-center">
                   <span>Test Link</span> <ExternalLink className="w-3 h-3 ml-1" />
                 </a>
                 <button
@@ -274,16 +274,16 @@ export default function AdminContentPage() {
       {activeTab === 'programs' && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {programs.map((prog) => (
-            <div key={prog.id} className="bg-gym-card rounded-2xl border border-gym-border overflow-hidden">
+            <div key={prog.id} className="bg-[#101B37] rounded-2xl border border-[#1E305C] overflow-hidden">
               <div className="h-44 relative">
                 <img src={prog.cover_image} alt={prog.title} className="w-full h-full object-cover" />
               </div>
               <div className="p-5">
                 <h3 className="text-base font-bold text-white mb-2">{prog.title}</h3>
                 <p className="text-xs text-zinc-400 mb-3 leading-relaxed">{prog.description}</p>
-                <div className="flex justify-between text-xs text-zinc-300 pt-3 border-t border-gym-border">
+                <div className="flex justify-between text-xs text-zinc-300 pt-3 border-t border-[#1E305C]">
                   <span>{prog.duration_weeks} Weeks</span>
-                  <span className="text-gym-red uppercase font-semibold">{prog.level}</span>
+                  <span className="text-[#D4AF37] uppercase font-semibold">{prog.level}</span>
                 </div>
               </div>
             </div>
@@ -294,8 +294,8 @@ export default function AdminContentPage() {
       {/* Add Video Modal */}
       {showVideoModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-gym-card border border-gym-border rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-gym-border pb-3 mb-4">
+          <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
               <h3 className="text-base font-bold uppercase font-display text-white">
                 Add YouTube Fitness Video URL
               </h3>
@@ -313,7 +313,7 @@ export default function AdminContentPage() {
                   placeholder="e.g. Perfect Deadlift Setup"
                   value={newVideoTitle}
                   onChange={(e) => setNewVideoTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
@@ -325,7 +325,7 @@ export default function AdminContentPage() {
                   placeholder="https://www.youtube.com/watch?v=op9kVnSso6Q"
                   value={newVideoUrl}
                   onChange={(e) => setNewVideoUrl(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
@@ -334,7 +334,7 @@ export default function AdminContentPage() {
                 <select
                   value={newVideoCategory}
                   onChange={(e) => setNewVideoCategory(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 >
                   <option value="Form & Technique">Form &amp; Technique</option>
                   <option value="Lower Body Strength">Lower Body Strength</option>
@@ -350,13 +350,13 @@ export default function AdminContentPage() {
                   placeholder="Key cues..."
                   value={newVideoDesc}
                   onChange={(e) => setNewVideoDesc(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase tracking-wider transition-colors"
+                className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase tracking-wider transition-colors"
               >
                 Save Video to Hub
               </button>
@@ -368,8 +368,8 @@ export default function AdminContentPage() {
       {/* Add Exercise Modal */}
       {showExerciseModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-gym-card border border-gym-border rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-gym-border pb-3 mb-4">
+          <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
               <h3 className="text-base font-bold uppercase font-display text-white">
                 Add Movement to Exercise Library
               </h3>
@@ -387,7 +387,7 @@ export default function AdminContentPage() {
                   placeholder="e.g. Romanian Deadlift"
                   value={exName}
                   onChange={(e) => setExName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
@@ -397,7 +397,7 @@ export default function AdminContentPage() {
                   <select
                     value={exCategory}
                     onChange={(e) => setExCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                   >
                     <option value="chest">Chest</option>
                     <option value="back">Back</option>
@@ -416,7 +416,7 @@ export default function AdminContentPage() {
                     placeholder="Barbell / Dumbbell"
                     value={exEquipment}
                     onChange={(e) => setExEquipment(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                   />
                 </div>
               </div>
@@ -428,13 +428,13 @@ export default function AdminContentPage() {
                   placeholder="Step by step execution cues..."
                   value={exInstructions}
                   onChange={(e) => setExInstructions(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase tracking-wider transition-colors"
+                className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase tracking-wider transition-colors"
               >
                 Save Exercise
               </button>
@@ -445,3 +445,5 @@ export default function AdminContentPage() {
     </div>
   );
 }
+
+

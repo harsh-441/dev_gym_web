@@ -37,10 +37,10 @@ export default function TransformationsPage() {
   ];
 
   return (
-    <div className="bg-gym-black text-white min-h-screen py-16">
+    <div className="bg-[#050B17] text-white min-h-screen py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-bold uppercase tracking-widest text-gym-red">Proof of Discipline</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">Proof of Discipline</span>
           <h1 className="text-4xl sm:text-5xl font-black uppercase font-display text-white mt-2">
             Transformation Gallery
           </h1>
@@ -53,23 +53,23 @@ export default function TransformationsPage() {
           {transformations.map((t, idx) => (
             <div
               key={idx}
-              className="bg-gym-card rounded-2xl border border-gym-border overflow-hidden hover:border-gym-red/50 transition-all flex flex-col justify-between"
+              className="bg-[#101B37] rounded-2xl border border-[#1E305C] overflow-hidden hover:border-[#D4AF37]/50 transition-all flex flex-col justify-between"
             >
               <div>
-                <div className="h-60 relative overflow-hidden bg-gym-charcoal">
+                <div className="h-60 relative overflow-hidden bg-[#0A1128]">
                   <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
-                  <div className="absolute bottom-3 left-3 bg-gym-red px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-white">
+                  <div className="absolute bottom-3 left-3 bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider text-white">
                     {t.duration}
                   </div>
-                  <div className="absolute top-3 right-3 bg-gym-black/80 px-2.5 py-1 rounded text-[10px] font-bold text-gym-silver border border-gym-border">
+                  <div className="absolute top-3 right-3 bg-[#050B17]/80 px-2.5 py-1 rounded text-[10px] font-bold text-gym-silver border border-[#1E305C]">
                     Age {t.age}
                   </div>
                 </div>
 
                 <div className="p-6">
                   <h3 className="text-lg font-bold text-white uppercase font-display mb-1">{t.name}</h3>
-                  <p className="text-xs text-gym-red font-semibold mb-2">{t.goal}</p>
-                  <p className="text-xs font-bold text-gym-silver bg-gym-charcoal px-3 py-1.5 rounded-lg border border-gym-border mb-4">
+                  <p className="text-xs text-[#D4AF37] font-semibold mb-2">{t.goal}</p>
+                  <p className="text-xs font-bold text-gym-silver bg-[#0A1128] px-3 py-1.5 rounded-lg border border-[#1E305C] mb-4">
                     {t.stats}
                   </p>
                   <p className="text-xs text-zinc-400 italic leading-relaxed">
@@ -78,7 +78,7 @@ export default function TransformationsPage() {
                 </div>
               </div>
 
-              <div className="p-6 pt-0 border-t border-gym-border/60 flex items-center text-[10px] text-zinc-400 mt-4">
+              <div className="p-6 pt-0 border-t border-[#1E305C]/60 flex items-center text-[10px] text-zinc-400 mt-4">
                 <ShieldCheck className="w-4 h-4 text-emerald-500 mr-1.5 shrink-0" />
                 <span>Adherence &amp; attendance verified by Dave</span>
               </div>
@@ -86,15 +86,15 @@ export default function TransformationsPage() {
           ))}
         </div>
 
-        <div className="bg-gym-charcoal p-8 rounded-2xl border border-gym-border text-center max-w-2xl mx-auto">
-          <Flame className="w-8 h-8 text-gym-red mx-auto mb-2" />
+        <div className="bg-[#0A1128] p-8 rounded-2xl border border-[#1E305C] text-center max-w-2xl mx-auto">
+          <Flame className="w-8 h-8 text-[#D4AF37] mx-auto mb-2" />
           <h3 className="text-xl font-bold uppercase font-display text-white mb-2">Write Your Own Transformation</h3>
           <p className="text-xs text-zinc-400 mb-6">
             Join Parshuram Fitness Gym today and start tracking your workouts, diet, and progress.
           </p>
           <Link
             href="/pricing"
-            className="px-6 py-3 rounded-lg bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center space-x-1.5"
+            className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white text-xs font-bold uppercase tracking-wider transition-colors inline-flex items-center space-x-1.5"
           >
             <span>Explore Memberships</span>
             <ArrowRight className="w-4 h-4" />
@@ -104,3 +104,5 @@ export default function TransformationsPage() {
     </div>
   );
 }
+
+

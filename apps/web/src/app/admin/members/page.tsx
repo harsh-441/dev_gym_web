@@ -197,7 +197,7 @@ export default function AdminMembersPage() {
       {/* Top Banner Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#141414] p-6 rounded-2xl border border-[#242424] shadow-xl">
         <div>
-          <span className="text-[11px] uppercase font-bold text-gym-red tracking-widest block">
+          <span className="text-[11px] uppercase font-bold text-[#D4AF37] tracking-widest block">
             Owner Command • Module A
           </span>
           <h1 className="text-2xl font-black uppercase text-white font-display mt-0.5">
@@ -210,7 +210,7 @@ export default function AdminMembersPage() {
 
         <button
           onClick={handleOpenAdd}
-          className="px-4 py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center space-x-2 shadow-lg shadow-red-950/60 shrink-0 hover:scale-105"
+          className="px-4 py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center space-x-2 shadow-lg shadow-black/60 shrink-0 hover:scale-105"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Member</span>
@@ -246,7 +246,7 @@ export default function AdminMembersPage() {
             placeholder="Search by name, email, phone, goal..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-lg bg-[#1c1c1c] border border-[#2e2e2e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-gym-red"
+            className="w-full pl-9 pr-4 py-2 rounded-lg bg-[#1c1c1c] border border-[#2e2e2e] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#D4AF37]"
           />
         </div>
 
@@ -258,7 +258,7 @@ export default function AdminMembersPage() {
               onClick={() => setStatusFilter(filterKey)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
                 statusFilter === filterKey
-                  ? 'bg-gym-red text-white'
+                  ? 'bg-[#D4AF37] text-[#050B17] text-white'
                   : 'bg-[#1c1c1c] text-zinc-400 hover:text-white hover:bg-[#252525]'
               }`}
             >
@@ -418,7 +418,7 @@ export default function AdminMembersPage() {
           <div className="bg-[#181818] border border-[#2a2a2a] rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[#282828] pb-3">
               <h3 className="text-lg font-bold text-white uppercase font-display flex items-center space-x-2">
-                <Plus className="w-5 h-5 text-gym-red" />
+                <Plus className="w-5 h-5 text-[#D4AF37]" />
                 <span>Register New Athlete</span>
               </h3>
               <button onClick={() => setShowAddModal(false)} className="text-zinc-400 hover:text-white">
@@ -435,7 +435,7 @@ export default function AdminMembersPage() {
                   placeholder="e.g. Siddharth Rao"
                   value={newFullName}
                   onChange={(e) => setNewFullName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                  className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                 />
               </div>
 
@@ -448,7 +448,7 @@ export default function AdminMembersPage() {
                     placeholder="athlete@example.com"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
                 <div>
@@ -458,7 +458,7 @@ export default function AdminMembersPage() {
                     placeholder="+91 98765 11111"
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
               </div>
@@ -469,7 +469,7 @@ export default function AdminMembersPage() {
                   <select
                     value={newGoal}
                     onChange={(e) => setNewGoal(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red capitalize"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37] capitalize"
                   >
                     <option value="muscle_gain">Muscle Gain</option>
                     <option value="fat_loss">Fat Loss</option>
@@ -484,7 +484,7 @@ export default function AdminMembersPage() {
                     type="number"
                     value={newHeight}
                     onChange={(e) => setNewHeight(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
                 <div>
@@ -493,7 +493,7 @@ export default function AdminMembersPage() {
                     type="number"
                     value={newWeight}
                     onChange={(e) => setNewWeight(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
               </div>
@@ -506,7 +506,7 @@ export default function AdminMembersPage() {
                     placeholder="+91 98888 00000"
                     value={newEmergency}
                     onChange={(e) => setNewEmergency(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
                 <div>
@@ -514,7 +514,7 @@ export default function AdminMembersPage() {
                   <select
                     value={newBloodGroup}
                     onChange={(e) => setNewBloodGroup(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   >
                     <option value="A+">A+</option>
                     <option value="A-">A-</option>
@@ -538,7 +538,7 @@ export default function AdminMembersPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase"
+                  className="px-5 py-2 rounded-lg bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase"
                 >
                   Create Member Profile
                 </button>
@@ -554,7 +554,7 @@ export default function AdminMembersPage() {
           <div className="bg-[#181818] border border-[#2a2a2a] rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[#282828] pb-3">
               <h3 className="text-lg font-bold text-white uppercase font-display flex items-center space-x-2">
-                <Edit className="w-5 h-5 text-gym-red" />
+                <Edit className="w-5 h-5 text-[#D4AF37]" />
                 <span>Edit Member Athlete</span>
               </h3>
               <button onClick={() => setEditingMember(null)} className="text-zinc-400 hover:text-white">
@@ -570,7 +570,7 @@ export default function AdminMembersPage() {
                   required
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                  className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                 />
               </div>
 
@@ -581,7 +581,7 @@ export default function AdminMembersPage() {
                     type="text"
                     value={editPhone}
                     onChange={(e) => setEditPhone(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
                 <div>
@@ -590,7 +590,7 @@ export default function AdminMembersPage() {
                     type="text"
                     value={editEmergency}
                     onChange={(e) => setEditEmergency(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
               </div>
@@ -602,7 +602,7 @@ export default function AdminMembersPage() {
                     type="number"
                     value={editHeight}
                     onChange={(e) => setEditHeight(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
                 <div>
@@ -611,7 +611,7 @@ export default function AdminMembersPage() {
                     type="number"
                     value={editWeight}
                     onChange={(e) => setEditWeight(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   />
                 </div>
                 <div>
@@ -619,7 +619,7 @@ export default function AdminMembersPage() {
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-gym-red"
+                    className="w-full px-3 py-2 rounded-lg bg-[#222222] border border-[#303030] text-white focus:outline-none focus:border-[#D4AF37]"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -638,7 +638,7 @@ export default function AdminMembersPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase"
+                  className="px-5 py-2 rounded-lg bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase"
                 >
                   Save Athlete Details
                 </button>
@@ -660,7 +660,7 @@ export default function AdminMembersPage() {
                 <>
                   <div className="flex items-center justify-between border-b border-[#282828] pb-4">
                     <div className="flex items-center space-x-3">
-                      <div className="w-12 h-12 rounded-xl bg-gym-red flex items-center justify-center font-bold text-white text-lg">
+                      <div className="w-12 h-12 rounded-xl bg-[#D4AF37] text-[#050B17] flex items-center justify-center font-bold text-white text-lg">
                         {prof?.full_name?.charAt(0) || 'M'}
                       </div>
                       <div>
@@ -784,7 +784,7 @@ export default function AdminMembersPage() {
               <button
                 onClick={executeConfirmedAction}
                 className={`px-4 py-2 rounded-lg text-white ${
-                  confirmAction.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-gym-red hover:bg-gym-redHover'
+                  confirmAction.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover'
                 }`}
               >
                 Confirm
@@ -796,3 +796,5 @@ export default function AdminMembersPage() {
     </div>
   );
 }
+
+

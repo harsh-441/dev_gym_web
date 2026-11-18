@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-gym-black text-white min-h-screen flex flex-col antialiased selection:bg-gym-red selection:text-white">
+      <body className="bg-[#050B17] text-white min-h-screen flex flex-col antialiased selection:bg-[#D4AF37] selection:text-[#050B17]">
         <AnnouncementBar />
         <Navbar />
         <main className="flex-grow">

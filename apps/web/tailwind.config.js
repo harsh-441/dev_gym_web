@@ -10,17 +10,30 @@ module.exports = {
     extend: {
       colors: {
         gym: {
-          black: '#080808',
-          charcoal: '#121212',
-          card: '#181818',
-          elevated: '#202020',
-          border: '#282828',
-          borderHover: '#3F3F46',
-          red: '#E02025',
-          redHover: '#FF2E36',
-          silver: '#D4D4D8',
-          muted: '#A1A1AA',
-          gold: '#D4AF37'
+          // Premium International Fitness Theme: Deep Royal Navy, Pure White, Soft Silver & Champagne Gold
+          navy: '#0A1128',
+          navyDark: '#050B17',
+          navyCard: '#101B37',
+          navyElevated: '#17254A',
+          navyBorder: '#1E305C',
+          navyBorderHover: '#334B85',
+          gold: '#D4AF37',
+          goldHover: '#E5C158',
+          goldMuted: '#997D29',
+          silver: '#CBD5E1',
+          silverLight: '#F1F5F9',
+          silverMuted: '#94A3B8',
+
+          // Compatibility Aliases for components and tests
+          black: '#050B17',
+          charcoal: '#0A1128',
+          card: '#101B37',
+          elevated: '#17254A',
+          border: '#1E305C',
+          borderHover: '#334B85',
+          red: '#D4AF37',        // Subtle Gold replaces aggressive red
+          redHover: '#E5C158',   // Lighter Gold hover
+          muted: '#94A3B8'
         }
       },
       fontFamily: {
@@ -28,9 +41,10 @@ module.exports = {
         display: ['Montserrat', 'Inter', '-apple-system', 'sans-serif']
       },
       boxShadow: {
-        'glow-red': '0 0 25px rgba(224, 32, 37, 0.35)',
-        'glow-red-sm': '0 0 12px rgba(224, 32, 37, 0.25)',
-        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.5)'
+        'glow-gold': '0 0 25px rgba(212, 175, 55, 0.35)',
+        'glow-gold-sm': '0 0 12px rgba(212, 175, 55, 0.25)',
+        'glow-navy': '0 0 35px rgba(10, 17, 40, 0.7)',
+        'card': '0 4px 20px -2px rgba(5, 11, 23, 0.65)'
       }
     },
   },

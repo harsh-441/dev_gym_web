@@ -26,9 +26,9 @@ export default function AdminEnquiriesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gym-card p-6 rounded-2xl border border-gym-border shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#101B37] p-6 rounded-2xl border border-[#1E305C] shadow-xl">
         <div>
-          <span className="text-xs uppercase font-bold text-gym-red tracking-wider">Module G</span>
+          <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">Module G</span>
           <h1 className="text-2xl font-black uppercase font-display text-white mt-0.5">
             Prospective Member Enquiries
           </h1>
@@ -39,10 +39,10 @@ export default function AdminEnquiriesPage() {
       </div>
 
       {/* Enquiries Table */}
-      <div className="bg-gym-card rounded-2xl border border-gym-border overflow-hidden shadow-xl">
+      <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-gym-charcoal text-zinc-400 uppercase font-bold text-[10px] border-b border-gym-border">
+            <thead className="bg-[#0A1128] text-zinc-400 uppercase font-bold text-[10px] border-b border-[#1E305C]">
               <tr>
                 <th className="py-3.5 px-4">Prospect Name</th>
                 <th className="py-3.5 px-4">Contact Details</th>
@@ -55,7 +55,7 @@ export default function AdminEnquiriesPage() {
             </thead>
             <tbody className="divide-y divide-gym-border">
               {enquiries.map((enq) => (
-                <tr key={enq.id} className="hover:bg-gym-charcoal/40 transition-colors">
+                <tr key={enq.id} className="hover:bg-[#0A1128]/40 transition-colors">
                   <td className="py-3.5 px-4 font-bold text-white">{enq.full_name}</td>
                   <td className="py-3.5 px-4 text-zinc-300">
                     <p>{enq.phone}</p>
@@ -69,7 +69,7 @@ export default function AdminEnquiriesPage() {
                         ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
                         : enq.status === 'contacted'
                         ? 'bg-blue-950 text-blue-300 border-blue-700'
-                        : 'bg-gym-red/20 text-gym-red border-gym-red/40'
+                        : 'bg-[#D4AF37] text-[#050B17]/20 text-[#D4AF37] border-[#D4AF37]/40'
                     }`}>
                       {enq.status}
                     </span>
@@ -84,7 +84,7 @@ export default function AdminEnquiriesPage() {
                         setStatus(enq.status);
                         setNotes(enq.notes || '');
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-gym-charcoal border border-gym-border text-zinc-300 hover:text-white text-[11px] font-semibold"
+                      className="px-3 py-1.5 rounded-lg bg-[#0A1128] border border-[#1E305C] text-zinc-300 hover:text-white text-[11px] font-semibold"
                     >
                       Update
                     </button>
@@ -99,8 +99,8 @@ export default function AdminEnquiriesPage() {
       {/* Edit Modal */}
       {selectedEnq && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-gym-card border border-gym-border rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-gym-border pb-3 mb-4">
+          <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
               <h3 className="text-base font-bold uppercase font-display text-white">
                 Update Prospect: {selectedEnq.full_name}
               </h3>
@@ -115,7 +115,7 @@ export default function AdminEnquiriesPage() {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as any)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 >
                   <option value="new">New Lead</option>
                   <option value="contacted">Contacted via Phone/WhatsApp</option>
@@ -131,13 +131,13 @@ export default function AdminEnquiriesPage() {
                   placeholder="e.g. Called and invited for floor tour on Saturday with Coach Vikram..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-xl bg-gym-red hover:bg-gym-redHover text-white font-bold uppercase tracking-wider transition-colors"
+                className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase tracking-wider transition-colors"
               >
                 Save Follow-Up
               </button>
@@ -148,3 +148,5 @@ export default function AdminEnquiriesPage() {
     </div>
   );
 }
+
+

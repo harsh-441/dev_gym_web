@@ -62,9 +62,9 @@ export default function AdminLeavesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gym-card p-6 rounded-2xl border border-gym-border shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#101B37] p-6 rounded-2xl border border-[#1E305C] shadow-xl">
         <div>
-          <span className="text-xs uppercase font-bold text-gym-red tracking-wider">Module D</span>
+          <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">Module D</span>
           <h1 className="text-2xl font-black uppercase font-display text-white mt-0.5">
             Employee Leave Approvals
           </h1>
@@ -74,14 +74,14 @@ export default function AdminLeavesPage() {
         </div>
 
         {/* Filter buttons */}
-        <div className="flex flex-wrap gap-1.5 bg-gym-charcoal p-1.5 rounded-xl border border-gym-border">
+        <div className="flex flex-wrap gap-1.5 bg-[#0A1128] p-1.5 rounded-xl border border-[#1E305C]">
           {['all', 'pending', 'approved', 'rejected'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                 statusFilter === st
-                  ? 'bg-gym-red text-white'
+                  ? 'bg-[#D4AF37] text-[#050B17] text-white'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -92,10 +92,10 @@ export default function AdminLeavesPage() {
       </div>
 
       {/* Leave List */}
-      <div className="bg-gym-card rounded-2xl border border-gym-border overflow-hidden shadow-xl">
+      <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-gym-charcoal text-zinc-400 uppercase font-bold text-[10px] border-b border-gym-border">
+            <thead className="bg-[#0A1128] text-zinc-400 uppercase font-bold text-[10px] border-b border-[#1E305C]">
               <tr>
                 <th className="py-3.5 px-4">Staff Member</th>
                 <th className="py-3.5 px-4">Leave Category</th>
@@ -113,7 +113,7 @@ export default function AdminLeavesPage() {
                 const leaveType = (api as any).store.leaveTypes.find((lt: any) => lt.id === leave.leave_type_id);
 
                 return (
-                  <tr key={leave.id} className="hover:bg-gym-charcoal/40 transition-colors">
+                  <tr key={leave.id} className="hover:bg-[#0A1128]/40 transition-colors">
                     <td className="py-3.5 px-4">
                       <span className="font-bold text-white block">{prof?.full_name || 'Staff Member'}</span>
                       <span className="text-[10px] text-zinc-400">{emp?.designation}</span>
@@ -159,7 +159,7 @@ export default function AdminLeavesPage() {
                             setSelectedLeave(leave);
                             setAdminNote('');
                           }}
-                          className="px-3 py-1.5 rounded-lg bg-gym-red hover:bg-gym-redHover text-white text-[11px] font-bold uppercase tracking-wider transition-colors"
+                          className="px-3 py-1.5 rounded-lg bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white text-[11px] font-bold uppercase tracking-wider transition-colors"
                         >
                           Review Request
                         </button>
@@ -169,7 +169,7 @@ export default function AdminLeavesPage() {
                             setSelectedLeave(leave);
                             setAdminNote(leave.admin_note || '');
                           }}
-                          className="px-3 py-1.5 rounded-lg bg-gym-charcoal border border-gym-border text-zinc-300 hover:text-white text-[11px] font-semibold"
+                          className="px-3 py-1.5 rounded-lg bg-[#0A1128] border border-[#1E305C] text-zinc-300 hover:text-white text-[11px] font-semibold"
                         >
                           Edit Decision
                         </button>
@@ -186,8 +186,8 @@ export default function AdminLeavesPage() {
       {/* Review Modal */}
       {selectedLeave && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-gym-card border border-gym-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-gym-border pb-3 mb-4">
+          <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-lg w-full p-6 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
               <h3 className="text-base font-bold uppercase font-display text-white">
                 Review Leave Application
               </h3>
@@ -197,14 +197,14 @@ export default function AdminLeavesPage() {
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="bg-gym-charcoal p-4 rounded-xl border border-gym-border space-y-1.5">
+              <div className="bg-[#0A1128] p-4 rounded-xl border border-[#1E305C] space-y-1.5">
                 <p className="text-white font-bold text-sm">
                   {(api as any).store.employees.find((e: any) => e.id === selectedLeave.employee_id)?.designation}
                 </p>
                 <p className="text-zinc-300">
                   Dates: <strong>{selectedLeave.start_date}</strong> to <strong>{selectedLeave.end_date}</strong>
                 </p>
-                <p className="text-zinc-400 italic bg-gym-black/40 p-2.5 rounded border border-gym-border">
+                <p className="text-zinc-400 italic bg-[#050B17]/40 p-2.5 rounded border border-[#1E305C]">
                   &quot;{selectedLeave.reason}&quot;
                 </p>
               </div>
@@ -218,7 +218,7 @@ export default function AdminLeavesPage() {
                   placeholder="e.g. Approved. Please coordinate evening shifts with Coach Vikram."
                   value={adminNote}
                   onChange={(e) => setAdminNote(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-gym-charcoal border border-gym-border text-white text-xs placeholder-zinc-500 focus:border-gym-red focus:outline-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white text-xs placeholder-zinc-500 focus:border-[#D4AF37] focus:outline-none"
                 />
               </div>
 
@@ -250,3 +250,5 @@ export default function AdminLeavesPage() {
     </div>
   );
 }
+
+
