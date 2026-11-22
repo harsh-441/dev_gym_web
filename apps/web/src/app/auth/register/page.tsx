@@ -19,6 +19,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +56,8 @@ export default function RegisterPage() {
       }
 
       setSuccess(true);
-      if (typeof window !== 'undefined') {
+      setSuccessMessage(data.message || 'Account created successfully.');
+      if (data.token && typeof window !== 'undefined') {
         localStorage.setItem('pfg_user_token', data.token);
         localStorage.setItem('pfg_user_email', data.user.email);
         localStorage.setItem('pfg_user_role', data.user.role);
@@ -63,9 +65,8 @@ export default function RegisterPage() {
         if (data.user.memberId) localStorage.setItem('pfg_member_id', data.user.memberId);
       }
 
-      setTimeout(() => {
-        router.push('/portal/member');
-      }, 1200);
+      if (data.token) setTimeout(() => router.push('/portal/member'), 1200);
+      else setTimeout(() => router.push('/auth/login'), 3000);
     } catch (err: any) {
       setServerError('Network error. Could not register account.');
       setLoading(false);
@@ -89,9 +90,9 @@ export default function RegisterPage() {
         {success ? (
           <div className="bg-emerald-950/40 border border-emerald-600 rounded-xl p-6 text-center space-y-2">
             <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-            <h4 className="text-base font-bold text-white">Account Created in Database!</h4>
+            <h4 className="text-base font-bold text-white">Account Created</h4>
             <p className="text-xs text-slate-300">
-              Welcome to Parshuram Fitness Gym. Redirecting directly to your active Member Portal...
+              {successMessage}
             </p>
           </div>
         ) : (

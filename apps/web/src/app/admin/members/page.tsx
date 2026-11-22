@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Users,
   Search,
@@ -22,13 +22,39 @@ import {
   Mail,
   Heart
 } from 'lucide-react';
-import { api, Member, Profile, FitnessGoalType } from '@parshuram/shared';
+import { Member, Profile, FitnessGoalType } from '@parshuram/shared';
 
 export default function AdminMembersPage() {
-  const [members, setMembers] = useState<Member[]>([...(api as any).store.members]);
-  const [profiles, setProfiles] = useState<Profile[]>([...(api as any).store.profiles]);
-  const [memberAttendance] = useState<any[]>([...(api as any).store.memberAttendance]);
-  const [membershipPlans] = useState<any[]>([...(api as any).store.membershipPlans]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [memberAttendance, setMemberAttendance] = useState<any[]>([]);
+  const [membershipPlans, setMembershipPlans] = useState<any[]>([]);
+  const [memberships, setMemberships] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadMembers = async () => {
+      const token = localStorage.getItem('pfg_user_token');
+      try {
+        const response = await fetch('/api/admin/members', {
+          headers: { Authorization: `Bearer ${token || ''}` },
+          cache: 'no-store'
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Could not load members.');
+        setMembers(data.members);
+        setProfiles(data.profiles);
+        setMembershipPlans(data.membershipPlans || []);
+        setMemberships(data.memberships || []);
+        if (data.membershipPlans?.length) setNewPlanId(data.membershipPlans[0].id);
+      } catch (error: any) {
+        setLoadError(error.message || 'Could not load members.');
+      }
+    };
+    loadMembers();
+  }, []);
 
   // Search & Filter
   const [search, setSearch] = useState('');
@@ -80,6 +106,17 @@ export default function AdminMembersPage() {
   const inactiveCount = members.filter((m) => m.status === 'inactive').length;
   const archivedCount = members.filter((m) => m.status === 'archived').length;
 
+  const openMember = async (member: Member) => {
+    setViewingMember(member);
+    setMemberAttendance([]);
+    try {
+      const token = localStorage.getItem('pfg_user_token') || '';
+      const response = await fetch(`/api/attendance?memberId=${encodeURIComponent(member.id)}`, { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+      const data = await response.json();
+      if (response.ok) setMemberAttendance(data.attendance || []);
+    } catch { setMemberAttendance([]); }
+  };
+
   const handleOpenAdd = () => {
     setNewFullName('');
     setNewEmail('');
@@ -97,22 +134,20 @@ export default function AdminMembersPage() {
     e.preventDefault();
     if (!newFullName.trim() || !newEmail.trim()) return;
 
-    const res = await api.registerMember({
-      fullName: newFullName.trim(),
-      email: newEmail.trim().toLowerCase(),
-      phone: newPhone.trim() || '+91 98765 11111',
-      fitnessGoal: newGoal,
-      heightCm: Number(newHeight),
-      weightKg: Number(newWeight),
-      emergencyContact: newEmergency || '+91 98765 00000',
-      bloodGroup: newBloodGroup
-    });
-
-    if (res && res.member) {
-      setMembers([...(api as any).store.members]);
-      setProfiles([...(api as any).store.profiles]);
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const token = localStorage.getItem('pfg_user_token') || '';
+      const response = await fetch('/api/admin/members', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ fullName: newFullName, email: newEmail, phone: newPhone, emergencyContact: newEmergency, bloodGroup: newBloodGroup, fitnessGoal: newGoal, heightCm: Number(newHeight), weightKg: Number(newWeight), planId: newPlanId }) });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Could not invite member.');
+      setMembers((current) => [data.member, ...current]);
+      setProfiles((current) => [data.profile, ...current]);
+      if (data.membership) setMemberships((current) => [data.membership, ...current]);
       setShowAddModal(false);
-    }
+      setActionError(data.message || 'Member invitation sent.');
+    } catch (error: any) { setActionError(error.message || 'Could not invite member.'); }
+    finally { setActionLoading(false); }
   };
 
   const handleOpenEdit = (m: Member) => {
@@ -126,12 +161,22 @@ export default function AdminMembersPage() {
     setEditStatus(m.status as any);
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingMember) return;
 
     const targetMem = members.find((m) => m.id === editingMember.id);
     const targetProf = profiles.find((p) => p.id === editingMember.profile_id);
+
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const token = localStorage.getItem('pfg_user_token') || '';
+      const response = await fetch('/api/admin/members', { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ memberId: editingMember.id, fullName: editName, phone: editPhone, emergency_contact: editEmergency, height_cm: Number(editHeight), weight_kg: Number(editWeight), status: editStatus }) });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Could not update member.');
+    } catch (error: any) { setActionError(error.message || 'Could not update member.'); setActionLoading(false); return; }
+    finally { setActionLoading(false); }
 
     if (targetMem) {
       targetMem.emergency_contact = editEmergency;
@@ -153,41 +198,45 @@ export default function AdminMembersPage() {
     setEditingMember(null);
   };
 
-  const executeConfirmedAction = () => {
+  const executeConfirmedAction = async () => {
     if (!confirmAction) return;
     const { type, member } = confirmAction;
 
     if (type === 'delete') {
-      const remaining = members.filter((m) => m.id !== member.id);
-      setMembers(remaining);
-      (api as any).store.members = remaining;
-    } else if (type === 'renew') {
-      // Extend membership renewal date
-      const target = members.find((m) => m.id === member.id);
-      if (target) {
-        target.status = 'active';
-        target.updated_at = new Date().toISOString();
+      setActionLoading(true);
+      setActionError(null);
+      try {
+        const token = localStorage.getItem('pfg_user_token');
+        const response = await fetch('/api/admin/members', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token || ''}` },
+          body: JSON.stringify({ memberId: member.id })
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Could not remove member.');
+        setMembers((current) => current.filter((item) => item.id !== member.id));
+        setProfiles((current) => current.map((profile) => profile.id === member.profile_id
+          ? { ...profile, is_active: false }
+          : profile));
+        setConfirmAction(null);
+      } catch (error: any) {
+        setActionError(error.message || 'Could not remove member.');
+      } finally {
+        setActionLoading(false);
       }
-      setMembers([...members]);
+      return;
     } else {
-      const targetMem = members.find((m) => m.id === member.id);
-      const targetProf = profiles.find((p) => p.id === member.profile_id);
-
-      if (targetMem) {
-        if (type === 'deactivate') {
-          targetMem.status = 'inactive';
-          if (targetProf) targetProf.is_active = false;
-        } else if (type === 'activate' || type === 'restore') {
-          targetMem.status = 'active';
-          if (targetProf) targetProf.is_active = true;
-        } else if (type === 'archive') {
-          targetMem.status = 'archived';
-          if (targetProf) targetProf.is_active = false;
-        }
-        targetMem.updated_at = new Date().toISOString();
-      }
-      setMembers([...members]);
-      setProfiles([...profiles]);
+      const nextStatus = ['activate', 'restore', 'renew'].includes(type) ? 'active' : 'inactive';
+      setActionLoading(true); setActionError(null);
+      try {
+        const token = localStorage.getItem('pfg_user_token') || '';
+        const response = await fetch('/api/admin/members', { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ memberId: member.id, status: nextStatus }) });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Could not update member status.');
+        setMembers((current) => current.map((item) => item.id === member.id ? { ...item, status: nextStatus } : item));
+        setProfiles((current) => current.map((profile) => profile.id === member.profile_id ? { ...profile, is_active: nextStatus === 'active' } : profile));
+      } catch (error: any) { setActionError(error.message || 'Could not update member status.'); }
+      finally { setActionLoading(false); }
     }
     setConfirmAction(null);
   };
@@ -269,6 +318,11 @@ export default function AdminMembersPage() {
       </div>
 
       {/* Member Table */}
+      {(loadError || actionError) && (
+        <div role="alert" className="rounded-xl border border-red-800 bg-red-950/40 px-4 py-3 text-xs text-red-200">
+          {actionError || loadError}
+        </div>
+      )}
       <div className="bg-[#141414] rounded-2xl border border-[#242424] overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-zinc-300">
@@ -333,7 +387,7 @@ export default function AdminMembersPage() {
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end space-x-1.5">
                           <button
-                            onClick={() => setViewingMember(mem)}
+                            onClick={() => openMember(mem)}
                             title="View Full Details"
                             className="p-1.5 rounded-lg bg-[#1e1e1e] hover:bg-white/10 text-zinc-300 hover:text-white transition-colors"
                           >
@@ -655,6 +709,7 @@ export default function AdminMembersPage() {
             {(() => {
               const prof = profiles.find((p) => p.id === viewingMember.profile_id);
               const memVisits = memberAttendance.filter((a) => a.member_id === viewingMember.id);
+              const currentMembership = memberships.find((item) => item.member_id === viewingMember.id);
 
               return (
                 <>
@@ -666,6 +721,7 @@ export default function AdminMembersPage() {
                       <div>
                         <h3 className="text-base font-bold text-white font-display uppercase">{prof?.full_name}</h3>
                         <p className="text-xs text-zinc-400 capitalize">Goal: {viewingMember.fitness_goal?.replace('_', ' ')}</p>
+                        <p className="text-xs text-zinc-400">Plan: {currentMembership?.membership_plans?.name || 'No membership recorded'} · {currentMembership?.start_date || '—'} to {currentMembership?.end_date || '—'} ({currentMembership?.status || 'none'})</p>
                       </div>
                     </div>
                     <button onClick={() => setViewingMember(null)} className="text-zinc-400 hover:text-white">
@@ -753,7 +809,7 @@ export default function AdminMembersPage() {
             <p className="text-xs text-zinc-300 leading-relaxed">
               {confirmAction.type === 'delete' ? (
                 <>
-                  Are you sure you want to permanently delete this athlete profile? Historical attendance data will remain safeguarded in audit logs.
+                    Remove this member from active records? Their membership, attendance, and progress history will be retained.
                 </>
               ) : confirmAction.type === 'renew' ? (
                 <>
@@ -776,18 +832,19 @@ export default function AdminMembersPage() {
 
             <div className="flex justify-end space-x-3 pt-3 border-t border-[#282828] text-xs font-bold uppercase">
               <button
-                onClick={() => setConfirmAction(null)}
+                onClick={() => !actionLoading && setConfirmAction(null)}
                 className="px-4 py-2 rounded-lg bg-[#242424] text-zinc-300 hover:text-white"
               >
                 Cancel
               </button>
               <button
                 onClick={executeConfirmedAction}
+                disabled={actionLoading}
                 className={`px-4 py-2 rounded-lg text-white ${
                   confirmAction.type === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover'
                 }`}
               >
-                Confirm
+                {actionLoading ? 'Saving...' : 'Confirm'}
               </button>
             </div>
           </div>

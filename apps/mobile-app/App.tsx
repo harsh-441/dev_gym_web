@@ -16,11 +16,11 @@ import {
   DEFAULT_APP_SETTINGS,
   INITIAL_EXERCISES,
   INITIAL_DIET_PLANS,
+  INITIAL_MEMBERSHIP_PLANS,
   api,
-  UserRole
 } from '@parshuram/shared';
 
-// Luxury Brand Palette (Deep Navy, Pure White, Soft Silver, Champagne Gold)
+// Luxury Brand Palette (Deep Royal Navy, Crisp White, Soft Silver, Champagne Gold)
 const COLORS = {
   navyDark: '#050B17',
   navy: '#0A1128',
@@ -40,234 +40,114 @@ const COLORS = {
 export default function ParshuramUnifiedApp() {
   // Authentication State
   const [sessionUser, setSessionUser] = useState<any>(null);
-  const [authRole, setAuthRole] = useState<UserRole>('member');
+  const [authToken, setAuthToken] = useState('');
+  const [authRole, setAuthRole] = useState<'super_admin' | 'admin' | 'member'>('member');
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
 
   // Active Tab per role
   const [activeTab, setActiveTab] = useState<string>('home');
 
-  // Shared Data States
+  // Public app catalog data; account and attendance data use the authenticated web API.
   const [members, setMembers] = useState<any[]>([...(api as any).store.members]);
-  const [employees, setEmployees] = useState<any[]>([...(api as any).store.employees]);
-  const [staffAttendance, setStaffAttendance] = useState<any[]>([...(api as any).store.staffAttendance]);
-  const [memberAttendance, setMemberAttendance] = useState<any[]>([...(api as any).store.memberAttendance]);
-  const [leaveApps, setLeaveApps] = useState<any[]>([...(api as any).store.leaveApplications]);
-  const [activeQR, setActiveQR] = useState<any>(null);
+  const [memberAttendance, setMemberAttendance] = useState<any[]>([]);
 
   // Form / Action States
-  const [memberQRToken, setMemberQRToken] = useState('');
   const [checkInNotice, setCheckInNotice] = useState<string | null>(null);
-  const [leaveReason, setLeaveReason] = useState('');
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberEmail, setNewMemberEmail] = useState('');
-  const [newEmpName, setNewEmpName] = useState('');
-  const [newEmpEmail, setNewEmpEmail] = useState('');
-  const [newEmpRole, setNewEmpRole] = useState('Strength Coach');
-
-  useEffect(() => {
-    // Initialize active QR session
-    api.getActiveQRSession().then(setActiveQR).catch(() => {});
-  }, []);
-
-  // Preset quick-login accounts
-  const quickAccounts = [
-    { label: 'Dave (Owner & Admin)', email: 'dave@parshuramgym.com', pass: 'DaveAdmin2026!', role: 'super_admin' },
-    { label: 'Vikram (Coach & Staff)', email: 'vikram@parshuramgym.com', pass: 'VikramTrainer2026!', role: 'trainer' },
-    { label: 'Rahul (Active Member)', email: 'rahul@example.com', pass: 'RahulMember2026!', role: 'member' }
-  ];
 
   const handleLogin = async (email: string, pass: string) => {
-    const store = (api as any).store;
-    const prof = store.profiles.find((p: any) => p.email.toLowerCase() === email.trim().toLowerCase());
-
-    if (!prof) {
-      Alert.alert('Account Not Found', 'No registered profile matches this email.');
-      return;
+    try {
+      const baseUrl = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
+      if (!baseUrl) { Alert.alert('Configuration Required', 'Set EXPO_PUBLIC_API_URL to your deployed gym website URL.'); return; }
+      const response = await fetch(`${baseUrl}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
+      const data = await response.json();
+      if (!response.ok || !data.success) { Alert.alert('Login Error', data.error || 'Could not sign in.'); return; }
+      if (!['super_admin', 'admin', 'member'].includes(data.user.role)) { Alert.alert('Access Removed', 'Staff and trainer sign-in is no longer available.'); return; }
+      if (data.user.role === 'member') {
+        const attendanceResponse = await fetch(`${baseUrl}/api/attendance`, { headers: { Authorization: `Bearer ${data.token}` } });
+        const attendanceData = await attendanceResponse.json();
+        setMemberAttendance(attendanceData.attendance || []);
+      } else {
+        setMemberAttendance([]);
+      }
+      setAuthToken(data.token);
+      setSessionUser({ id: data.user.id, full_name: data.user.name, email: data.user.email });
+      setAuthRole(data.user.role);
+      setActiveTab('home');
+    } catch (e: any) {
+      Alert.alert('Authentication Error', e.message);
     }
-    if (!prof.is_active) {
-      Alert.alert('Access Denied', 'This account has been deactivated or archived.');
-      return;
-    }
-
-    setSessionUser(prof);
-    setAuthRole(prof.role);
-    setActiveTab('home');
   };
 
   const handleLogout = () => {
     setSessionUser(null);
     setEmailInput('');
     setPasswordInput('');
+    setActiveTab('home');
   };
 
-  // MEMBER: Free QR Check-in
+  // Member Check-in action (Guaranteed 100% Free)
   const handleMemberCheckIn = async () => {
-    if (!sessionUser) return;
-    const store = (api as any).store;
-    const mem = store.members.find((m: any) => m.profile_id === sessionUser.id) || store.members[0];
-
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
+    if (!baseUrl || !authToken) return;
     try {
-      const active = await api.getActiveQRSession();
-      const token = memberQRToken.trim() || active.token;
-      const res = await api.memberCheckIn(mem.id, token, 'qr');
-
-      if (res.success) {
-        setCheckInNotice(res.message);
-        setMemberAttendance([...store.memberAttendance]);
-        setMemberQRToken('');
-      } else {
-        setCheckInNotice(res.message);
-      }
-    } catch (err: any) {
-      setCheckInNotice('Check-in error. Please verify session.');
-    }
+      const response = await fetch(`${baseUrl}/api/attendance`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` }, body: JSON.stringify({}) });
+      const result = await response.json();
+      if (!response.ok) { Alert.alert('Check-In Notice', result.error || 'Could not check in.'); return; }
+      setCheckInNotice(result.message || 'Attendance recorded successfully.');
+      const historyResponse = await fetch(`${baseUrl}/api/attendance`, { headers: { Authorization: `Bearer ${authToken}` } });
+      const history = await historyResponse.json();
+      setMemberAttendance(history.attendance || []);
+    } catch { Alert.alert('Check-In Error', 'Could not reach the gym service. Please try again.'); }
   };
 
-  // EMPLOYEE: Shift Clock-In / Clock-Out
-  const handleClockIn = async () => {
-    const store = (api as any).store;
-    const emp = store.employees.find((e: any) => e.profile_id === sessionUser.id) || store.employees[1];
-    const active = await api.getActiveQRSession();
-    const res = await api.employeeCheckIn(emp.id, active.token, 'qr');
-    setStaffAttendance([...store.staffAttendance]);
-    Alert.alert('Shift Recorded', res.message);
-  };
-
-  const handleClockOut = async () => {
-    const store = (api as any).store;
-    const emp = store.employees.find((e: any) => e.profile_id === sessionUser.id) || store.employees[1];
-    const res = await api.employeeCheckOut(emp.id);
-    setStaffAttendance([...store.staffAttendance]);
-    Alert.alert('Shift Ended', res.message);
-  };
-
-  // EMPLOYEE: Submit Leave Request
-  const handleSubmitLeave = async () => {
-    if (!leaveReason.trim()) {
-      Alert.alert('Required', 'Please enter a reason for leave.');
-      return;
-    }
-    const store = (api as any).store;
-    const emp = store.employees.find((e: any) => e.profile_id === sessionUser.id) || store.employees[1];
-
-    await api.applyLeave({
-      employeeId: emp.id,
-      leaveTypeId: 'lt-1',
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-      reason: leaveReason.trim()
-    });
-
-    setLeaveApps([...store.leaveApplications]);
-    setLeaveReason('');
-    Alert.alert('Leave Submitted', 'Application sent to Dave for review.');
-  };
-
-  // OWNER: Add Member
-  const handleAddMember = async () => {
-    if (!newMemberName.trim() || !newMemberEmail.trim()) {
-      Alert.alert('Missing Fields', 'Please enter name and email.');
-      return;
-    }
-    await api.registerMember({
-      fullName: newMemberName.trim(),
-      email: newMemberEmail.trim().toLowerCase(),
-      fitnessGoal: 'muscle_gain'
-    });
-    setMembers([...(api as any).store.members]);
-    setNewMemberName('');
-    setNewMemberEmail('');
-    Alert.alert('Success', 'New member saved to database.');
-  };
-
-  // OWNER: Add Coach
-  const handleAddCoach = async () => {
-    if (!newEmpName.trim() || !newEmpEmail.trim()) {
-      Alert.alert('Missing Fields', 'Please enter coach name and email.');
-      return;
-    }
-    const store = (api as any).store;
-    const prof = {
-      id: `prof-emp-${Date.now()}`,
-      user_id: `usr-emp-${Date.now()}`,
-      full_name: newEmpName.trim(),
-      email: newEmpEmail.trim().toLowerCase(),
-      role: 'trainer' as UserRole,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    const emp = {
-      id: `emp-${Date.now()}`,
-      profile_id: prof.id,
-      department: 'Fitness Training',
-      designation: newEmpRole,
-      salary_type: 'monthly' as any,
-      joining_date: new Date().toISOString().split('T')[0],
-      status: 'active' as any,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    store.profiles.push(prof);
-    store.employees.push(emp);
-    setEmployees([...store.employees]);
-    setNewEmpName('');
-    setNewEmpEmail('');
-    Alert.alert('Coach Added', 'Coach is now live and synchronized with the website.');
-  };
-
-  // OWNER: Toggle Status (Active / Inactive / Archive)
-  const handleToggleCoach = (empId: string, currentStatus: string) => {
-    const store = (api as any).store;
-    const target = store.employees.find((e: any) => e.id === empId);
-    if (!target) return;
-    target.status = currentStatus === 'active' ? 'inactive' : 'active';
-    setEmployees([...store.employees]);
-    Alert.alert('Status Updated', `Coach is now ${target.status}.`);
-  };
-
-  // --------------------------------------------------------------------------
-  // SCREEN 1: LOGIN SCREEN (if not signed in)
-  // --------------------------------------------------------------------------
+  // ---------------- AUTH SCREEN ----------------
   if (!sessionUser) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.safeContainer}>
         <StatusBar barStyle="light-content" backgroundColor={COLORS.navyDark} />
         <ScrollView contentContainerStyle={styles.authScroll}>
           {/* Brand Header */}
-          <View style={styles.authLogoBox}>
-            <View style={styles.emblemBadge}>
-              <Text style={styles.emblemText}>PFG</Text>
+          <View style={styles.brandContainer}>
+            <View style={styles.logoBadge}>
+              <Text style={styles.logoAxe}>⚔</Text>
             </View>
-            <Text style={styles.authTitle}>PARSHURAM FITNESS</Text>
-            <Text style={styles.authSubtitle}>DIVINE DISCIPLINE • UNIFIED ANDROID APP</Text>
+            <Text style={styles.brandTitle}>PARSHURAM</Text>
+            <Text style={styles.brandSubtitle}>FITNESS CLUB</Text>
+            <Text style={styles.tagline}>EST. 2016 • MEERUT, UP • OWNER: KAPIL DEV</Text>
           </View>
 
-          {/* Form */}
+          {/* Login Card */}
           <View style={styles.card}>
-            <Text style={styles.cardHeader}>Sign In With Your Account</Text>
+            <Text style={styles.cardHeading}>Sign In To Multi-Role App</Text>
+            <Text style={styles.cardSub}>One unified Android app with real database synchronization</Text>
 
-            <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. dave@parshuramgym.com"
-              placeholderTextColor={COLORS.textMuted}
-              value={emailInput}
-              onChangeText={setEmailInput}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="name@example.com"
+                placeholderTextColor={COLORS.textMuted}
+                value={emailInput}
+                onChangeText={setEmailInput}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+            </View>
 
-            <Text style={styles.inputLabel}>PASSWORD</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="••••••••"
-              placeholderTextColor={COLORS.textMuted}
-              value={passwordInput}
-              onChangeText={setPasswordInput}
-              secureTextEntry
-            />
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>PASSWORD</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="••••••••••••"
+                placeholderTextColor={COLORS.textMuted}
+                value={passwordInput}
+                onChangeText={setPasswordInput}
+                secureTextEntry
+              />
+            </View>
 
             <TouchableOpacity
               style={styles.goldButton}
@@ -276,366 +156,210 @@ export default function ParshuramUnifiedApp() {
               <Text style={styles.goldButtonText}>SIGN IN</Text>
             </TouchableOpacity>
 
-            {/* Quick Demo Role Selector */}
-            <View style={styles.divider} />
-            <Text style={styles.sectionCaption}>ONE-TAP ROLE TESTING:</Text>
-            {quickAccounts.map((acc, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={styles.quickAccountBtn}
-                onPress={() => handleLogin(acc.email, acc.pass)}
-              >
-                <View>
-                  <Text style={styles.quickAccountTitle}>{acc.label}</Text>
-                  <Text style={styles.quickAccountEmail}>{acc.email}</Text>
-                </View>
-                <Text style={styles.quickAccountArrow}>→</Text>
-              </TouchableOpacity>
-            ))}
           </View>
         </ScrollView>
       </SafeAreaView>
     );
   }
 
-  // --------------------------------------------------------------------------
-  // SCREEN 2: OWNER / ADMIN DASHBOARD
-  // --------------------------------------------------------------------------
-  if (authRole === 'super_admin' || authRole === 'admin') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.navyDark} />
-        {/* Top Bar */}
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.topBarRole}>OWNER &amp; SUPER ADMIN</Text>
-            <Text style={styles.topBarName}>Dave • Executive Console</Text>
-          </View>
-          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-            <Text style={styles.logoutBtnText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
+  // ---------------- AUTHENTICATED DASHBOARD ----------------
+  const isOwner = authRole === 'super_admin' || authRole === 'admin';
+  const isMember = authRole === 'member';
 
-        {/* Tab Navigation */}
-        <View style={styles.tabsRow}>
-          {['overview', 'members', 'coaches', 'attendance'].map((t) => (
-            <TouchableOpacity
-              key={t}
-              style={[styles.tabBtn, activeTab === t && styles.tabBtnActive]}
-              onPress={() => setActiveTab(t)}
-            >
-              <Text style={[styles.tabBtnText, activeTab === t && styles.tabBtnTextActive]}>
-                {t.toUpperCase()}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {activeTab === 'overview' && (
-            <View>
-              {/* KPIs Grid */}
-              <View style={styles.kpiRow}>
-                <View style={styles.kpiCard}>
-                  <Text style={styles.kpiNum}>{members.length}</Text>
-                  <Text style={styles.kpiLabel}>Total Members</Text>
-                </View>
-                <View style={styles.kpiCard}>
-                  <Text style={styles.kpiNum}>{employees.filter((e) => e.status === 'active').length}</Text>
-                  <Text style={styles.kpiLabel}>Active Coaches</Text>
-                </View>
-                <View style={styles.kpiCard}>
-                  <Text style={styles.kpiNum}>{memberAttendance.length}</Text>
-                  <Text style={styles.kpiLabel}>Visits Today</Text>
-                </View>
-              </View>
-
-              {/* Live QR Token Box */}
-              <View style={styles.card}>
-                <Text style={styles.cardHeader}>ENTRANCE ATTENDANCE QR SESSION</Text>
-                <Text style={styles.bodyText}>
-                  Active Token: <Text style={styles.boldGold}>{activeQR?.token || 'PARSHURAM-SESSION'}</Text>
-                </Text>
-                <Text style={styles.hintText}>Auto-rotates to prevent forwarded QR codes. Zero fee for members.</Text>
-              </View>
-
-              {/* Pending Leaves Box */}
-              <View style={styles.card}>
-                <Text style={styles.cardHeader}>PENDING STAFF LEAVES ({leaveApps.filter((l) => l.status === 'pending').length})</Text>
-                {leaveApps.filter((l) => l.status === 'pending').length === 0 ? (
-                  <Text style={styles.hintText}>All staff leave applications reviewed.</Text>
-                ) : (
-                  leaveApps
-                    .filter((l) => l.status === 'pending')
-                    .map((l) => (
-                      <View key={l.id} style={styles.listItem}>
-                        <Text style={styles.listTitle}>{l.start_date} to {l.end_date}</Text>
-                        <Text style={styles.bodyText}>&quot;{l.reason}&quot;</Text>
-                      </View>
-                    ))
-                )}
-              </View>
-            </View>
-          )}
-
-          {activeTab === 'members' && (
-            <View>
-              {/* Add Member Form */}
-              <View style={styles.card}>
-                <Text style={styles.cardHeader}>ADD NEW GYM MEMBER</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Full Name (e.g. Karan Singhania)"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={newMemberName}
-                  onChangeText={setNewMemberName}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email Address"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={newMemberEmail}
-                  onChangeText={setNewMemberEmail}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity style={styles.goldButton} onPress={handleAddMember}>
-                  <Text style={styles.goldButtonText}>REGISTER MEMBER</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Members List */}
-              <View style={styles.card}>
-                <Text style={styles.cardHeader}>MEMBER ROSTER ({members.length})</Text>
-                {members.map((m) => (
-                  <View key={m.id} style={styles.listItem}>
-                    <View>
-                      <Text style={styles.listTitle}>{m.id} • {m.fitness_goal}</Text>
-                      <Text style={styles.hintText}>Status: {m.status.toUpperCase()} • Joined: {m.join_date}</Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {activeTab === 'coaches' && (
-            <View>
-              {/* Add Coach Form */}
-              <View style={styles.card}>
-                <Text style={styles.cardHeader}>ADD NEW COACH / STAFF</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Coach Full Name"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={newEmpName}
-                  onChangeText={setNewEmpName}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Coach Email Address"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={newEmpEmail}
-                  onChangeText={setNewEmpEmail}
-                  autoCapitalize="none"
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Designation (e.g. Biomechanics Coach)"
-                  placeholderTextColor={COLORS.textMuted}
-                  value={newEmpRole}
-                  onChangeText={setNewEmpRole}
-                />
-                <TouchableOpacity style={styles.goldButton} onPress={handleAddCoach}>
-                  <Text style={styles.goldButtonText}>ADD TO ACTIVE ROSTER</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Synchronized Coaches List */}
-              <View style={styles.card}>
-                <Text style={styles.cardHeader}>COACHING STAFF (SYNCS WITH WEBSITE)</Text>
-                {employees.map((e) => (
-                  <View key={e.id} style={styles.listItem}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.listTitle}>{e.id} • {e.designation}</Text>
-                      <Text style={styles.hintText}>Status: {e.status.toUpperCase()}</Text>
-                    </View>
-                    {e.id !== 'emp-dave' && (
-                      <TouchableOpacity
-                        style={[styles.smallBtn, e.status === 'active' ? styles.btnDanger : styles.btnSuccess]}
-                        onPress={() => handleToggleCoach(e.id, e.status)}
-                      >
-                        <Text style={styles.smallBtnText}>
-                          {e.status === 'active' ? 'Deactivate' : 'Activate'}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {activeTab === 'attendance' && (
-            <View>
-              <View style={styles.card}>
-                <Text style={styles.cardHeader}>STAFF WORK SHIFTS ({staffAttendance.length})</Text>
-                {staffAttendance.map((s) => (
-                  <View key={s.id} style={styles.listItem}>
-                    <Text style={styles.listTitle}>Employee: {s.employee_id}</Text>
-                    <Text style={styles.hintText}>In: {new Date(s.check_in_time).toLocaleTimeString()}</Text>
-                    {s.check_out_time ? (
-                      <Text style={styles.hintText}>Out: {new Date(s.check_out_time).toLocaleTimeString()}</Text>
-                    ) : (
-                      <Text style={[styles.hintText, { color: COLORS.emerald }]}>SHIFT CURRENTLY ACTIVE</Text>
-                    )}
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-
-  // --------------------------------------------------------------------------
-  // SCREEN 3: EMPLOYEE / COACH DASHBOARD
-  // --------------------------------------------------------------------------
-  if (authRole === 'trainer' || authRole === 'employee') {
-    const isShiftActive = staffAttendance.some(
-      (a) => a.employee_id === sessionUser.id && !a.check_out_time
-    );
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.navyDark} />
-        <View style={styles.topBar}>
-          <View>
-            <Text style={styles.topBarRole}>STAFF &amp; COACH TERMINAL</Text>
-            <Text style={styles.topBarName}>{sessionUser.full_name}</Text>
-          </View>
-          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-            <Text style={styles.logoutBtnText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Shift Actions */}
-          <View style={styles.card}>
-            <Text style={styles.cardHeader}>DAILY WORK SHIFT</Text>
-            <Text style={styles.bodyText}>
-              Status: <Text style={isShiftActive ? styles.textSuccess : styles.textMuted}>{isShiftActive ? 'ACTIVE SHIFT' : 'OFF SHIFT'}</Text>
-            </Text>
-
-            <View style={{ marginTop: 12 }}>
-              {!isShiftActive ? (
-                <TouchableOpacity style={styles.emeraldButton} onPress={handleClockIn}>
-                  <Text style={styles.btnFullText}>CLOCK IN (START SHIFT)</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity style={styles.goldButton} onPress={handleClockOut}>
-                  <Text style={styles.goldButtonText}>CLOCK OUT (END SHIFT)</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-
-          {/* Leave Application */}
-          <View style={styles.card}>
-            <Text style={styles.cardHeader}>APPLY FOR LEAVE</Text>
-            <TextInput
-              style={[styles.input, { height: 70 }]}
-              placeholder="Reason for leave (reviewed by Dave)..."
-              placeholderTextColor={COLORS.textMuted}
-              value={leaveReason}
-              onChangeText={setLeaveReason}
-              multiline
-            />
-            <TouchableOpacity style={styles.goldButton} onPress={handleSubmitLeave}>
-              <Text style={styles.goldButtonText}>SUBMIT LEAVE REQUEST</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
-
-  // --------------------------------------------------------------------------
-  // SCREEN 4: MEMBER ATHLETE DASHBOARD
-  // --------------------------------------------------------------------------
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeContainer}>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.navyDark} />
-      <View style={styles.topBar}>
+
+      {/* Top App Bar */}
+      <View style={styles.appBar}>
         <View>
-          <Text style={styles.topBarRole}>WARRIOR ATHLETE HUB</Text>
-          <Text style={styles.topBarName}>Namaste, {sessionUser.full_name}</Text>
+          <Text style={styles.appBarTitle}>PARSHURAM FITNESS CLUB</Text>
+          <Text style={styles.appBarRole}>
+            {sessionUser.full_name} • {authRole.toUpperCase()}
+          </Text>
         </View>
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutBtnText}>Logout</Text>
+          <Text style={styles.logoutText}>EXIT</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* 100% Free Daily Attendance */}
-        <View style={styles.card}>
-          <Text style={styles.cardHeader}>100% FREE DAILY ATTENDANCE</Text>
-          <Text style={styles.hintText}>Zero charge. Enter active entrance desk token or tap check-in:</Text>
+      {/* Role Navigation Bar */}
+      <View style={styles.navBar}>
+        <TouchableOpacity
+          style={[styles.navItem, activeTab === 'home' && styles.navItemActive]}
+          onPress={() => setActiveTab('home')}
+        >
+          <Text style={[styles.navText, activeTab === 'home' && styles.navTextActive]}>Home</Text>
+        </TouchableOpacity>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Enter token (leave blank to auto-sync)..."
-            placeholderTextColor={COLORS.textMuted}
-            value={memberQRToken}
-            onChangeText={setMemberQRToken}
-          />
+        {isOwner && (
+          <>
+            <TouchableOpacity
+              style={[styles.navItem, activeTab === 'members' && styles.navItemActive]}
+              onPress={() => setActiveTab('members')}
+            >
+              <Text style={[styles.navText, activeTab === 'members' && styles.navTextActive]}>Members</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.navItem, activeTab === 'plans' && styles.navItemActive]}
+              onPress={() => setActiveTab('plans')}
+            >
+              <Text style={[styles.navText, activeTab === 'plans' && styles.navTextActive]}>Pricing</Text>
+            </TouchableOpacity>
+          </>
+        )}
 
-          <TouchableOpacity style={styles.goldButton} onPress={handleMemberCheckIn}>
-            <Text style={styles.goldButtonText}>MARK FREE GYM VISIT</Text>
-          </TouchableOpacity>
+        {isMember && (
+          <>
+            <TouchableOpacity
+              style={[styles.navItem, activeTab === 'attendance' && styles.navItemActive]}
+              onPress={() => setActiveTab('attendance')}
+            >
+              <Text style={[styles.navText, activeTab === 'attendance' && styles.navTextActive]}>Attendance</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.navItem, activeTab === 'workout' && styles.navItemActive]}
+              onPress={() => setActiveTab('workout')}
+            >
+              <Text style={[styles.navText, activeTab === 'workout' && styles.navTextActive]}>Workouts</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
 
-          {checkInNotice && (
-            <Text style={[styles.hintText, { marginTop: 8, color: COLORS.emerald }]}>{checkInNotice}</Text>
-          )}
-        </View>
+      <ScrollView contentContainerStyle={styles.contentScroll}>
+        {/* TAB: HOME */}
+        {activeTab === 'home' && (
+          <View style={styles.tabContent}>
+            {/* Owner Overview Card */}
+            {isOwner && (
+              <View style={styles.card}>
+                <Text style={styles.cardHeading}>Kapil Dev - Owner Executive Panel</Text>
+                <Text style={styles.cardSub}>Database synchronized with website & floor station</Text>
 
-        {/* Workout Plan Preview */}
-        <View style={styles.card}>
-          <Text style={styles.cardHeader}>TODAY&apos;S WORKOUT SCHEDULE</Text>
-          <Text style={styles.listTitle}>Heavy Compound Push Protocol</Text>
-          <Text style={styles.bodyText}>• Bench Press: 4 Sets × 8 Reps</Text>
-          <Text style={styles.bodyText}>• Standing Overhead Press: 3 Sets × 10 Reps</Text>
-          <Text style={styles.bodyText}>• Parallel Bar Dips: 3 Sets × 12 Reps</Text>
-        </View>
+                <View style={styles.statsGrid}>
+                  <View style={styles.statBox}>
+                    <Text style={styles.statValue}>{members.length}</Text>
+                    <Text style={styles.statLabel}>TOTAL MEMBERS</Text>
+                  </View>
+                  <View style={styles.statBox}>
+                    <Text style={styles.statValue}>{memberAttendance.length}</Text>
+                    <Text style={styles.statLabel}>CHECK-INS</Text>
+                  </View>
+                  <View style={styles.statBox}>
+                    <Text style={styles.statValue}>₹500+</Text>
+                    <Text style={styles.statLabel}>MEMBERSHIPS</Text>
+                  </View>
+                </View>
 
-        {/* Indian Diet Blueprint */}
-        <View style={styles.card}>
-          <Text style={styles.cardHeader}>INDIAN NUTRITION BLUEPRINT</Text>
-          <Text style={styles.listTitle}>High-Protein Desi Plan (2,600 kcal)</Text>
-          <Text style={styles.bodyText}>• Breakfast: Oats + Almonds + 1 Scoop Whey</Text>
-          <Text style={styles.bodyText}>• Lunch: 150g Paneer + Dal Tadka + 3 Rotis</Text>
-          <Text style={styles.bodyText}>• Dinner: 65g Soya chunks curry + Curd</Text>
-        </View>
+              </View>
+            )}
+
+            {/* Member Card */}
+            {isMember && (
+              <View style={styles.card}>
+                <Text style={styles.cardHeading}>Member Personal Hub</Text>
+                <Text style={styles.cardSub}>Parshuram Fitness Club • Est. 2016 in Meerut</Text>
+
+                <View style={styles.checkInBox}>
+                  <Text style={styles.inputLabel}>TODAY ATTENDANCE CHECK-IN (FREE)</Text>
+                  <TouchableOpacity style={styles.goldButton} onPress={handleMemberCheckIn}>
+                    <Text style={styles.goldButtonText}>CHECK IN TODAY</Text>
+                  </TouchableOpacity>
+                  {checkInNotice && <Text style={styles.noticeText}>{checkInNotice}</Text>}
+                </View>
+
+                <View style={styles.infoBanner}>
+                  <Text style={styles.infoTitle}>Gym Operating Hours (Mon-Sat):</Text>
+                  <Text style={styles.infoSub}>• Morning: 5:30 AM – 10:00 AM</Text>
+                  <Text style={styles.infoSub}>• Evening: 5:00 PM – 10:00 PM</Text>
+                  <Text style={[styles.infoSub, { color: COLORS.crimson, marginTop: 4 }]}>Sunday: CLOSED</Text>
+                </View>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* TAB: MEMBERS (Owner Only) */}
+        {activeTab === 'members' && isOwner && (
+          <View style={styles.tabContent}>
+            <View style={styles.card}>
+              <Text style={styles.cardHeading}>Manage Registered Members</Text>
+              <Text style={styles.cardSub}>Total Registered: {members.length}</Text>
+
+              {members.map((m, i) => {
+                const prof = (api as any).store.profiles.find((p: any) => p.id === m.profile_id);
+                return (
+                  <View key={i} style={styles.memberRow}>
+                    <View>
+                      <Text style={styles.memberName}>{prof?.full_name || 'Member'}</Text>
+                      <Text style={styles.memberSub}>{prof?.email} • {m.fitness_goal}</Text>
+                    </View>
+                    <Text style={styles.statusBadge}>{m.status.toUpperCase()}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
+        {/* TAB: PRICING PLANS */}
+        {activeTab === 'plans' && (
+          <View style={styles.tabContent}>
+            <View style={styles.card}>
+              <Text style={styles.cardHeading}>Official Membership Packages</Text>
+              <Text style={styles.cardSub}>Parshuram Fitness Club - Meerut</Text>
+
+              {INITIAL_MEMBERSHIP_PLANS.map((plan, i) => (
+                <View key={i} style={styles.planBox}>
+                  <View style={styles.planHeader}>
+                    <Text style={styles.planName}>{plan.name}</Text>
+                    <Text style={styles.planPrice}>₹{plan.price.toLocaleString('en-IN')}</Text>
+                  </View>
+                  <Text style={styles.planDesc}>{plan.description}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* TAB: WORKOUTS (Member) */}
+        {activeTab === 'workout' && (
+          <View style={styles.tabContent}>
+            <View style={styles.card}>
+              <Text style={styles.cardHeading}>Exercise Movement Library</Text>
+              <Text style={styles.cardSub}>Calibrated Barbell, Cardio & Functional Training</Text>
+
+              {INITIAL_EXERCISES.slice(0, 5).map((ex, i) => (
+                <View key={i} style={styles.exerciseItem}>
+                  <Text style={styles.exName}>{ex.name}</Text>
+                  <Text style={styles.exCategory}>{ex.category.toUpperCase()} • {ex.equipment}</Text>
+                  <Text style={styles.exInstructions}>{ex.instructions[0]}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeContainer: {
     flex: 1,
     backgroundColor: COLORS.navyDark
   },
   authScroll: {
-    flexGrow: 1,
+    padding: 20,
     justifyContent: 'center',
-    padding: 20
+    minHeight: '100%'
   },
-  authLogoBox: {
+  brandContainer: {
     alignItems: 'center',
     marginBottom: 24
   },
-  emblemBadge: {
+  logoBadge: {
     width: 60,
     height: 60,
     borderRadius: 16,
@@ -644,259 +368,381 @@ const styles = StyleSheet.create({
     borderColor: COLORS.gold,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12
+    marginBottom: 10
   },
-  emblemText: {
-    color: COLORS.gold,
-    fontWeight: '900',
-    fontSize: 20
+  logoAxe: {
+    fontSize: 26,
+    color: COLORS.gold
   },
-  authTitle: {
-    fontSize: 22,
+  brandTitle: {
+    fontSize: 26,
     fontWeight: '900',
     color: COLORS.white,
-    letterSpacing: 1.5
+    letterSpacing: 2
   },
-  authSubtitle: {
-    fontSize: 10,
+  brandSubtitle: {
+    fontSize: 22,
+    fontWeight: '900',
     color: COLORS.gold,
+    letterSpacing: 3
+  },
+  tagline: {
+    fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 2,
+    color: COLORS.silver,
+    letterSpacing: 1.5,
     marginTop: 4
   },
   card: {
     backgroundColor: COLORS.navyCard,
     borderRadius: 16,
+    padding: 20,
     borderWidth: 1,
     borderColor: COLORS.border,
-    padding: 18,
     marginBottom: 16
   },
-  cardHeader: {
-    color: COLORS.gold,
-    fontWeight: '900',
+  cardHeading: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.white,
+    textTransform: 'uppercase'
+  },
+  cardSub: {
     fontSize: 12,
-    letterSpacing: 1,
-    marginBottom: 12
+    color: COLORS.textMuted,
+    marginTop: 2,
+    marginBottom: 16
+  },
+  inputGroup: {
+    marginBottom: 14
   },
   inputLabel: {
-    color: COLORS.silver,
     fontSize: 10,
     fontWeight: '700',
-    marginBottom: 6
+    color: COLORS.silver,
+    marginBottom: 6,
+    letterSpacing: 1
   },
   input: {
     backgroundColor: COLORS.navy,
     borderWidth: 1,
     borderColor: COLORS.border,
     borderRadius: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     color: COLORS.white,
-    fontSize: 12,
-    marginBottom: 12
+    fontSize: 13
   },
   goldButton: {
     backgroundColor: COLORS.gold,
     borderRadius: 10,
-    paddingVertical: 12,
+    paddingVertical: 13,
     alignItems: 'center',
-    marginTop: 4
+    marginTop: 6
   },
   goldButtonText: {
     color: COLORS.navyDark,
+    fontSize: 13,
     fontWeight: '900',
-    fontSize: 12,
     letterSpacing: 1
-  },
-  emeraldButton: {
-    backgroundColor: COLORS.emerald,
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: 'center'
-  },
-  btnFullText: {
-    color: COLORS.white,
-    fontWeight: '900',
-    fontSize: 12
   },
   divider: {
     height: 1,
     backgroundColor: COLORS.border,
     marginVertical: 16
   },
-  sectionCaption: {
+  demoHeading: {
     fontSize: 10,
-    color: COLORS.textMuted,
-    fontWeight: '700',
+    fontWeight: '800',
+    color: COLORS.silver,
     letterSpacing: 1,
+    textAlign: 'center',
     marginBottom: 10
   },
-  quickAccountBtn: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  roleAccountButton: {
     backgroundColor: COLORS.navy,
-    borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: 10,
     padding: 12,
-    marginBottom: 8
-  },
-  quickAccountTitle: {
-    color: COLORS.white,
-    fontWeight: '700',
-    fontSize: 12
-  },
-  quickAccountEmail: {
-    color: COLORS.textMuted,
-    fontSize: 10,
-    marginTop: 2
-  },
-  quickAccountArrow: {
-    color: COLORS.gold,
-    fontSize: 16,
-    fontWeight: '900'
-  },
-  topBar: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.navyCard,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    paddingHorizontal: 16,
-    paddingVertical: 12
+    marginBottom: 8
   },
-  topBarRole: {
-    color: COLORS.gold,
-    fontSize: 10,
-    fontWeight: '900',
-    letterSpacing: 1
-  },
-  topBarName: {
-    color: COLORS.white,
-    fontSize: 14,
+  roleLabel: {
+    fontSize: 12,
     fontWeight: '700',
+    color: COLORS.white
+  },
+  roleEmail: {
+    fontSize: 10,
+    color: COLORS.textMuted,
     marginTop: 2
   },
-  logoutBtn: {
-    backgroundColor: COLORS.navy,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8
+  roleBadge: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: COLORS.gold,
+    backgroundColor: COLORS.navyElevated,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6
   },
-  logoutBtnText: {
-    color: COLORS.silver,
-    fontSize: 11,
-    fontWeight: '700'
-  },
-  tabsRow: {
+  appBar: {
     flexDirection: 'row',
-    backgroundColor: COLORS.navyDark,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: COLORS.navy,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border
   },
-  tabBtn: {
+  appBarTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: COLORS.white,
+    letterSpacing: 1
+  },
+  appBarRole: {
+    fontSize: 11,
+    color: COLORS.gold,
+    fontWeight: '600'
+  },
+  logoutBtn: {
+    backgroundColor: COLORS.navyCard,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border
+  },
+  logoutText: {
+    color: COLORS.crimson,
+    fontSize: 11,
+    fontWeight: '800'
+  },
+  navBar: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.navyCard,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border
+  },
+  navItem: {
     flex: 1,
     paddingVertical: 10,
     alignItems: 'center'
   },
-  tabBtnActive: {
+  navItemActive: {
     borderBottomWidth: 2,
     borderBottomColor: COLORS.gold
   },
-  tabBtnText: {
-    color: COLORS.textMuted,
-    fontSize: 10,
-    fontWeight: '700'
+  navText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.textMuted
   },
-  tabBtnTextActive: {
-    color: COLORS.gold
+  navTextActive: {
+    color: COLORS.white
   },
-  scrollContent: {
+  contentScroll: {
     padding: 16
   },
-  kpiRow: {
+  tabContent: {
+    flex: 1
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginVertical: 12
+  },
+  statBox: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: COLORS.navy,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.border
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: COLORS.white
+  },
+  statLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: COLORS.silver,
+    marginTop: 2
+  },
+  qrSessionBox: {
+    backgroundColor: COLORS.navy,
+    borderRadius: 12,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: COLORS.gold,
+    marginTop: 10,
+    alignItems: 'center'
+  },
+  qrHeading: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: COLORS.white
+  },
+  qrToken: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: COLORS.gold,
+    marginVertical: 4
+  },
+  qrSub: {
+    fontSize: 10,
+    color: COLORS.emerald
+  },
+  clockRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginVertical: 10
+  },
+  actionBtn: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center'
+  },
+  actionBtnText: {
+    color: COLORS.white,
+    fontSize: 12,
+    fontWeight: '800'
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: COLORS.silver,
+    marginTop: 12,
+    marginBottom: 6
+  },
+  historyRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border
   },
-  kpiCard: {
-    flex: 1,
-    backgroundColor: COLORS.navyCard,
+  historyTime: {
+    fontSize: 12,
+    color: COLORS.white
+  },
+  historyStatus: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: COLORS.emerald
+  },
+  checkInBox: {
+    marginTop: 6
+  },
+  noticeText: {
+    fontSize: 11,
+    color: COLORS.emerald,
+    marginTop: 6,
+    textAlign: 'center'
+  },
+  infoBanner: {
+    marginTop: 16,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: COLORS.navy,
+    borderWidth: 1,
+    borderColor: COLORS.border
+  },
+  infoTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: COLORS.gold,
+    marginBottom: 4
+  },
+  infoSub: {
+    fontSize: 11,
+    color: COLORS.silver
+  },
+  memberRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border
+  },
+  memberName: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.white
+  },
+  memberSub: {
+    fontSize: 10,
+    color: COLORS.textMuted,
+    marginTop: 2
+  },
+  statusBadge: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: COLORS.emerald,
+    backgroundColor: COLORS.navyElevated,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6
+  },
+  planBox: {
+    backgroundColor: COLORS.navy,
+    borderRadius: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 12,
-    padding: 12,
-    alignItems: 'center',
-    marginHorizontal: 3
+    marginBottom: 10
   },
-  kpiNum: {
-    fontSize: 20,
+  planHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  planName: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: COLORS.white
+  },
+  planPrice: {
+    fontSize: 16,
     fontWeight: '900',
     color: COLORS.gold
   },
-  kpiLabel: {
-    fontSize: 9,
-    color: COLORS.silver,
-    fontWeight: '700',
-    marginTop: 2
-  },
-  bodyText: {
-    color: COLORS.silver,
-    fontSize: 12,
-    lineHeight: 18,
-    marginBottom: 4
-  },
-  boldGold: {
-    color: COLORS.gold,
-    fontWeight: '900'
-  },
-  hintText: {
+  planDesc: {
+    fontSize: 11,
     color: COLORS.textMuted,
-    fontSize: 10,
     marginTop: 4
   },
-  listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  exerciseItem: {
     backgroundColor: COLORS.navy,
+    borderRadius: 10,
+    padding: 12,
     borderWidth: 1,
     borderColor: COLORS.border,
-    borderRadius: 8,
-    padding: 10,
     marginBottom: 8
   },
-  listTitle: {
-    color: COLORS.white,
-    fontSize: 12,
-    fontWeight: '700'
+  exName: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: COLORS.white
   },
-  smallBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6
-  },
-  btnDanger: {
-    backgroundColor: '#7F1D1D'
-  },
-  btnSuccess: {
-    backgroundColor: '#065F46'
-  },
-  smallBtnText: {
-    color: COLORS.white,
+  exCategory: {
     fontSize: 10,
-    fontWeight: '700'
+    color: COLORS.gold,
+    marginVertical: 2
   },
-  textSuccess: {
-    color: COLORS.emerald,
-    fontWeight: '700'
-  },
-  textMuted: {
-    color: COLORS.textMuted
+  exInstructions: {
+    fontSize: 11,
+    color: COLORS.silver
   }
 });

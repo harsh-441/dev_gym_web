@@ -1,13 +1,13 @@
 -- PARSHURAM FITNESS GYM - SEED DATA FOR DEVELOPMENT & INITIAL LAUNCH
--- Includes Dave (Owner), certified trainers, initial exercises, Indian meal plans, and membership plans
+-- Includes the Owner, public coach profiles, initial exercises, Indian meal plans, and membership plans
 
 -- Profiles
 INSERT INTO public.profiles (id, full_name, email, phone, role, is_active)
 VALUES 
     ('d0000000-0000-0000-0000-000000000001', 'Dave (Owner & Founder)', 'dave@parshuramgym.com', '+91 99999 00001', 'super_admin', true),
-    ('d0000000-0000-0000-0000-000000000002', 'Vikram Rathore', 'vikram@parshuramgym.com', '+91 99999 00002', 'trainer', true),
-    ('d0000000-0000-0000-0000-000000000003', 'Priya Sharma', 'priya@parshuramgym.com', '+91 99999 00003', 'trainer', true),
-    ('d0000000-0000-0000-0000-000000000004', 'Amit Patel', 'amit@parshuramgym.com', '+91 99999 00004', 'employee', true)
+    ('d0000000-0000-0000-0000-000000000002', 'Vikram Rathore', 'vikram@parshuramgym.com', '+91 99999 00002', 'member', false),
+    ('d0000000-0000-0000-0000-000000000003', 'Priya Sharma', 'priya@parshuramgym.com', '+91 99999 00003', 'member', false),
+    ('d0000000-0000-0000-0000-000000000004', 'Amit Patel', 'amit@parshuramgym.com', '+91 99999 00004', 'member', false)
 ON CONFLICT (id) DO NOTHING;
 
 -- Employees
@@ -27,20 +27,12 @@ VALUES
     ('t0000000-0000-0000-0000-000000000003', 'e0000000-0000-0000-0000-000000000003', '{"Functional HIIT", "Mobility"}', '{"ACE Certified"}', 7, 'Priya specializes in athletic conditioning, agile mobility, and functional core power.', 4.95, 'https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&w=600&q=80')
 ON CONFLICT (id) DO NOTHING;
 
--- Leave Types
-INSERT INTO public.leave_types (id, name, description, max_days_per_year, is_paid)
-VALUES
-    ('l0000000-0000-0000-0000-000000000001', 'Casual Leave', 'General personal time off with prior notice', 12, true),
-    ('l0000000-0000-0000-0000-000000000002', 'Sick Leave', 'Medical or health recuperation', 10, true),
-    ('l0000000-0000-0000-0000-000000000003', 'Emergency Leave', 'Urgent domestic or personal emergency', 5, true)
-ON CONFLICT (id) DO NOTHING;
-
 -- Membership Plans (Editable placeholders for Dave)
 INSERT INTO public.membership_plans (id, name, description, duration_months, price, features, is_active)
 VALUES
-    ('m0000000-0000-0000-0000-000000000001', 'Monthly Warrior Plan', 'Full floor & cardio access for 1 month', 1, 1999.00, '{"Unlimited floor access", "Free attendance marking", "Locker room & shower", "Mobile app access"}', true),
-    ('m0000000-0000-0000-0000-000000000002', 'Quarterly Discipline Plan', '3-month transformation commitment', 3, 4999.00, '{"All Warrior features", "AI fitness planner access", "Monthly body composition review", "1 Guest pass/mo"}', true),
-    ('m0000000-0000-0000-0000-000000000003', 'Annual Divine Elite Plan', 'Full 12-month mastery package', 12, 14999.00, '{"All Discipline features", "Priority coach sessions", "Quarterly diet overhaul", "Free Gym Warrior Jersey", "Zero freeze fees"}', true)
+    ('b0000000-0000-0000-0000-000000000001', 'Monthly Warrior Plan', 'Full floor & cardio access for 1 month', 1, 1999.00, '{"Unlimited floor access", "Free attendance marking", "Locker room & shower", "Mobile app access"}', true),
+    ('b0000000-0000-0000-0000-000000000002', 'Quarterly Discipline Plan', '3-month transformation commitment', 3, 4999.00, '{"All Warrior features", "AI fitness planner access", "Monthly body composition review", "1 Guest pass/mo"}', true),
+    ('b0000000-0000-0000-0000-000000000003', 'Annual Divine Elite Plan', 'Full 12-month mastery package', 12, 14999.00, '{"All Discipline features", "Priority coach sessions", "Quarterly diet overhaul", "Free Gym Warrior Jersey", "Zero freeze fees"}', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Initial Exercises

@@ -1,73 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { api, UserRole } from '@parshuram/shared';
+import { createAuthToken } from '@/lib/admin-auth';
+import { supabaseRest } from '@/lib/supabase-rest';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.json();
-    const { email, password, role } = body;
-
-    if (!email || !email.trim()) {
-      return NextResponse.json({ success: false, error: 'Email address is required.' }, { status: 400 });
+    const body = await request.json();
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !password || password.length > 256) {
+      return NextResponse.json({ success: false, error: 'Enter a valid email and password.' }, { status: 400 });
     }
-
-    const normalizedEmail = email.trim().toLowerCase();
-    const store = (api as any).store;
-
-    const profile = store.profiles.find((p: any) => p.email.toLowerCase() === normalizedEmail);
-    if (!profile) {
-      return NextResponse.json({
-        success: false,
-        error: 'No account found with this email address. Please register first.'
-      }, { status: 404 });
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !anonKey) return NextResponse.json({ success: false, error: 'Authentication is not configured.' }, { status: 503 });
+    const authResponse = await fetch(`${url.replace(/\/$/, '')}/auth/v1/token?grant_type=password`, {
+      method: 'POST', cache: 'no-store', headers: { apikey: anonKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const authData = await authResponse.json();
+    if (!authResponse.ok || !authData.user?.id) return NextResponse.json({ success: false, error: 'Invalid email or password.' }, { status: 401 });
+    const profiles = await supabaseRest<any[]>('profiles', { query: { select: 'id,email,full_name,role,is_active', user_id: `eq.${authData.user.id}`, limit: '1' } });
+    const profile = profiles[0];
+    if (!profile || !profile.is_active || !['member', 'admin', 'super_admin'].includes(profile.role)) {
+      return NextResponse.json({ success: false, error: 'This account is unavailable. Contact the gym owner.' }, { status: 403 });
     }
-
-    if (!profile.is_active) {
-      return NextResponse.json({
-        success: false,
-        error: 'This account has been deactivated or archived. Please contact Dave at the front desk.'
-      }, { status: 403 });
-    }
-
-    // Verify password if user passed password
-    const storedPassword = store.passwords[normalizedEmail];
-    if (storedPassword && password && password !== storedPassword) {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid password. Please check your credentials and try again.'
-      }, { status: 401 });
-    }
-
-    // Determine target dashboard based on actual profile role
-    let dashboardRoute = '/portal/member';
-    if (profile.role === 'super_admin' || profile.role === 'admin') {
-      dashboardRoute = '/admin';
-    } else if (profile.role === 'trainer' || profile.role === 'employee') {
-      dashboardRoute = '/portal/employee';
-    }
-
-    const token = `pfg-jwt-${profile.id}-${Date.now()}`;
-
-    // Get associated member or employee record
-    const memberRecord = store.members.find((m: any) => m.profile_id === profile.id);
-    const employeeRecord = store.employees.find((e: any) => e.profile_id === profile.id);
-
+    const members = profile.role === 'member' ? await supabaseRest<any[]>('members', { query: { select: 'id', profile_id: `eq.${profile.id}`, deleted_at: 'is.null', limit: '1' } }) : [];
+    if (profile.role === 'member' && !members[0]) return NextResponse.json({ success: false, error: 'Member profile is unavailable.' }, { status: 403 });
+    const dashboardRoute = ['admin', 'super_admin'].includes(profile.role) ? '/admin' : '/portal/member';
     return NextResponse.json({
       success: true,
       message: 'Login successful',
-      token,
+      token: createAuthToken({ id: profile.id, email: profile.email, role: profile.role }),
       dashboardRoute,
-      user: {
-        id: profile.id,
-        name: profile.full_name,
-        email: profile.email,
-        role: profile.role,
-        memberId: memberRecord?.id,
-        employeeId: employeeRecord?.id
-      }
+      user: { id: profile.id, name: profile.full_name, email: profile.email, role: profile.role, memberId: members[0]?.id }
     });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message || 'Could not sign in.' }, { status: 503 });
   }
 }

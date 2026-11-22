@@ -1,6 +1,6 @@
-// Parshuram Fitness Gym - Core Type Definitions
+// Parshuram Fitness Club - Core Type Definitions
 
-export type UserRole = 'super_admin' | 'admin' | 'trainer' | 'employee' | 'member';
+export type UserRole = 'super_admin' | 'admin' | 'member';
 
 export interface Profile {
   id: string;
@@ -61,7 +61,7 @@ export interface MembershipPlan {
   name: string;
   description: string;
   duration_months: number;
-  price: number; // Placeholder for Dave to edit
+  price: number; // Configurable membership rate
   features: string[];
   is_active: boolean;
   created_at: string;
@@ -81,100 +81,30 @@ export interface Membership {
   created_at: string;
 }
 
-// ATTENDANCE SEPARATION: Member attendance and staff attendance are separate!
 export interface MemberAttendance {
   id: string;
   member_id: string;
   member?: Member;
   check_in_time: string;
   check_out_time?: string;
-  check_in_method: 'qr' | 'manual';
+  attendance_date?: string;
+  check_in_method: 'qr' | 'manual' | 'portal';
+  record_source?: 'member' | 'owner';
   status: 'present';
   qr_session_id?: string;
   notes?: string;
   created_at: string;
 }
 
-export interface StaffAttendance {
-  id: string;
-  employee_id: string;
-  employee?: Employee;
-  check_in_time: string;
-  check_out_time?: string;
-  check_in_method: 'qr' | 'manual';
-  status: 'present' | 'late' | 'half_day';
-  qr_session_id?: string;
-  shift_hours?: number;
-  notes?: string;
-  created_at: string;
-}
-
-export interface AttendanceQRSession {
-  id: string;
-  token: string;
-  qr_type: 'member' | 'staff' | 'universal';
-  created_by: string;
-  valid_duration_seconds: number;
-  expires_at: string;
-  is_active: boolean;
-  created_at: string;
-}
-
 export interface AttendanceCorrection {
   id: string;
   target_attendance_id: string;
-  attendance_type: 'member' | 'staff';
+  attendance_type: 'member';
   corrected_by: string;
   reason: string;
   original_check_in: string;
   new_check_in: string;
   created_at: string;
-}
-
-// LEAVE MANAGEMENT
-export type LeaveStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
-
-export interface LeaveType {
-  id: string;
-  name: string;
-  description: string;
-  max_days_per_year: number;
-  is_paid: boolean;
-  created_at: string;
-}
-
-export interface LeaveApplication {
-  id: string;
-  employee_id: string;
-  employee?: Employee;
-  leave_type_id: string;
-  leave_type?: LeaveType;
-  start_date: string;
-  end_date: string;
-  reason: string;
-  status: LeaveStatus;
-  admin_note?: string;
-  reviewed_by?: string;
-  reviewed_at?: string;
-  created_at: string;
-}
-
-export interface LeaveBalance {
-  id: string;
-  employee_id: string;
-  leave_type_id: string;
-  year: number;
-  total_allocated: number;
-  used_days: number;
-}
-
-export interface WorkSchedule {
-  id: string;
-  employee_id: string;
-  day_of_week: number; // 0 = Sunday, 1 = Monday, ...
-  shift_start: string; // e.g., '06:00'
-  shift_end: string;   // e.g., '14:00'
-  is_off: boolean;
 }
 
 // EXERCISES & WORKOUTS
@@ -373,7 +303,7 @@ export interface Announcement {
   id: string;
   title: string;
   content: string;
-  target_audience: 'all' | 'members' | 'employees';
+  target_audience: 'all' | 'members';
   priority: 'normal' | 'high' | 'urgent';
   published_at: string;
   expires_at?: string;
@@ -436,7 +366,7 @@ export interface AuditLog {
   created_at: string;
 }
 
-// SYSTEM SETTINGS (Managed by Dave)
+// SYSTEM SETTINGS (Managed by Owner Kapil Dev)
 export interface AppSettings {
   gym_name: string;
   tagline: string;
@@ -447,8 +377,6 @@ export interface AppSettings {
   city: string;
   opening_hours_weekdays: string;
   opening_hours_weekends: string;
-  qr_token_validity_seconds: number;
-  enable_manual_checkin: boolean;
   late_threshold_minutes: number;
   announcement_banner?: string;
 }

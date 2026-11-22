@@ -1,23 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CreditCard, Edit, Plus, Check, HelpCircle, Save, X } from 'lucide-react';
-import { api, MembershipPlan, INITIAL_MEMBERSHIP_PLANS } from '@parshuram/shared';
+import { MembershipPlan } from '@parshuram/shared';
 
 export default function AdminMembershipsPage() {
-  const [plans, setPlans] = useState<MembershipPlan[]>([...INITIAL_MEMBERSHIP_PLANS]);
+  const [plans, setPlans] = useState<MembershipPlan[]>([]);
   const [editingPlan, setEditingPlan] = useState<MembershipPlan | null>(null);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
-  const handleSavePlan = (e: React.FormEvent) => {
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const token = localStorage.getItem('pfg_user_token') || '';
+        const response = await fetch('/api/admin/membership-plans', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not load plans.');
+        setPlans(data.plans || []);
+      } catch (caught: any) { setError(caught.message || 'Could not load plans.'); }
+    };
+    load();
+  }, []);
+
+  const handleSavePlan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingPlan) return;
 
-    const idx = plans.findIndex((p) => p.id === editingPlan.id);
-    if (idx !== -1) {
-      plans[idx] = editingPlan;
-      setPlans([...plans]);
-    }
-    setEditingPlan(null);
+    setSaving(true); setError('');
+    try {
+      const token = localStorage.getItem('pfg_user_token') || '';
+      const method = editingPlan.id ? 'PATCH' : 'POST';
+      const response = await fetch('/api/admin/membership-plans', { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(editingPlan) });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || 'Could not save plan.');
+      setPlans((current) => editingPlan.id ? current.map((plan) => plan.id === data.plan.id ? data.plan : plan) : [...current, data.plan]);
+      setEditingPlan(null);
+    } catch (caught: any) { setError(caught.message || 'Could not save plan.'); }
+    finally { setSaving(false); }
   };
 
   return (
@@ -30,16 +50,19 @@ export default function AdminMembershipsPage() {
             Membership Plans &amp; Pricing Management
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Dave&apos;s direct pricing control: update rates, plan durations, and member inclusions.
+            Owner&apos;s direct pricing control: update rates, plan durations, and member inclusions.
           </p>
         </div>
+        <button onClick={() => setEditingPlan({ id: '', name: '', description: '', duration_months: 1, price: 0, features: [], is_active: true, created_at: new Date().toISOString() })} className="flex items-center justify-center gap-2 rounded-xl bg-[#D4AF37] px-4 py-2.5 text-xs font-bold uppercase text-[#050B17]"><Plus className="h-4 w-4"/>Add plan</button>
       </div>
 
-      {/* Dave Pricing Notice */}
+      {error && <p role="alert" className="rounded-lg border border-red-800 bg-red-950/40 p-3 text-sm text-red-200">{error}</p>}
+
+      {/* Owner Pricing Notice */}
       <div className="bg-[#0A1128] border border-[#1E305C] rounded-xl p-4 flex items-center space-x-3 text-xs text-zinc-300">
         <HelpCircle className="w-5 h-5 text-gym-silver shrink-0" />
         <span>
-          <strong>Owner Rule:</strong> Prices below are configured as initial editable placeholders. Dave can edit any rate, duration, or feature list below at any time without developer intervention.
+          <strong>Owner Rule:</strong> Prices below are configured as initial editable placeholders. Owner Kapil Dev can edit any rate, duration, or feature list below at any time without developer intervention.
         </span>
       </div>
 
@@ -104,7 +127,7 @@ export default function AdminMembershipsPage() {
           <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
             <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
               <h3 className="text-base font-bold uppercase font-display text-white">
-                Edit {editingPlan.name}
+                {editingPlan.id ? `Edit ${editingPlan.name}` : 'Add membership plan'}
               </h3>
               <button onClick={() => setEditingPlan(null)} className="text-zinc-400 hover:text-white">
                 <X className="w-5 h-5" />
@@ -160,7 +183,7 @@ export default function AdminMembershipsPage() {
                 type="submit"
                 className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase tracking-wider transition-colors"
               >
-                Save Changes
+                {saving ? 'Saving…' : 'Save Changes'}
               </button>
             </form>
           </div>

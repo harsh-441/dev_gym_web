@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -22,11 +22,18 @@ import {
 
 export default function MemberApp() {
   const [currentTab, setCurrentTab] = useState<'home' | 'attendance' | 'workouts' | 'diet' | 'profile'>('home');
-  const [member, setMember] = useState<any>((api as any).store.members[0]);
-  const [attendanceList, setAttendanceList] = useState<any[]>([...(api as any).store.memberAttendance]);
+  const [member, setMember] = useState<any>(null);
+  const [attendanceList, setAttendanceList] = useState<any[]>([]);
+  const [profile, setProfile] = useState<any>(null);
+  const [membershipPlan, setMembershipPlan] = useState<any>(null);
+  const [membership, setMembership] = useState<any>(null);
+  const [authToken, setAuthToken] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [loginMessage, setLoginMessage] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
 
   // Attendance state
-  const [qrToken, setQrToken] = useState('');
   const [attendanceMessage, setAttendanceMessage] = useState<string | null>(null);
 
   // Exercise category filter
@@ -44,16 +51,36 @@ export default function MemberApp() {
   const [weightInput, setWeightInput] = useState(member?.weight_kg?.toString() || '74');
   const [weightLoggedSuccess, setWeightLoggedSuccess] = useState(false);
 
-  const handleMarkAttendance = async () => {
+  const handleLogin = async () => {
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
+    if (!baseUrl) { setLoginMessage('Set EXPO_PUBLIC_API_URL to the deployed gym website URL.'); return; }
+    setLoginLoading(true); setLoginMessage('');
     try {
-      const activeSession = await api.getActiveQRSession();
-      const tokenToVerify = qrToken.trim() || activeSession.token;
+      const response = await fetch(`${baseUrl}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: emailInput, password: passwordInput }) });
+      const data = await response.json();
+      if (!response.ok || !data.success || data.user?.role !== 'member') throw new Error(data.error || 'Use a member account to sign in.');
+      const profileResponse = await fetch(`${baseUrl}/api/auth/me`, { headers: { Authorization: `Bearer ${data.token}` } });
+      const profileData = await profileResponse.json();
+      if (!profileResponse.ok || !profileData.success || !profileData.member) throw new Error(profileData.error || 'Member profile is unavailable.');
+      setAuthToken(data.token); setProfile(profileData.profile); setMember(profileData.member); setMembershipPlan(profileData.plan); setMembership(profileData.membership);
+      if (profileData.member.weight_kg) setWeightInput(String(profileData.member.weight_kg));
+      const historyResponse = await fetch(`${baseUrl}/api/attendance`, { headers: { Authorization: `Bearer ${data.token}` } });
+      const history = await historyResponse.json();
+      setAttendanceList(history.attendance || []);
+    } catch (error: any) { setLoginMessage(error.message || 'Could not sign in.'); }
+    finally { setLoginLoading(false); }
+  };
 
-      const res = await api.memberCheckIn(member.id, tokenToVerify, 'qr');
-      setAttendanceMessage(res.message);
-      if (res.success) {
-        setAttendanceList([...(api as any).store.memberAttendance]);
-        setQrToken('');
+  const handleMarkAttendance = async () => {
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '');
+    if (!baseUrl || !authToken) return;
+    try {
+      const response = await fetch(`${baseUrl}/api/attendance`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` }, body: JSON.stringify({}) });
+      const result = await response.json();
+      setAttendanceMessage(result.message || result.error || 'Check-in failed.');
+      if (response.ok) {
+        const historyResponse = await fetch(`${baseUrl}/api/attendance`, { headers: { Authorization: `Bearer ${authToken}` } });
+        const history = await historyResponse.json(); setAttendanceList(history.attendance || []);
       }
     } catch (err: any) {
       setAttendanceMessage('Check-in error. Please try again.');
@@ -80,6 +107,20 @@ export default function MemberApp() {
     ? INITIAL_EXERCISES
     : INITIAL_EXERCISES.filter((e) => e.category === exerciseFilter);
 
+  if (!authToken) return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#080808" />
+      <View style={{ padding: 24, justifyContent: 'center', flex: 1 }}>
+        <Text style={styles.titleLarge}>Member Sign In</Text>
+        <Text style={styles.paragraphMuted}>Use your gym member account. Attendance and profile data load from the gym database.</Text>
+        <TextInput style={styles.input} placeholder="Email address" autoCapitalize="none" keyboardType="email-address" value={emailInput} onChangeText={setEmailInput}/>
+        <TextInput style={styles.input} placeholder="Password" secureTextEntry value={passwordInput} onChangeText={setPasswordInput}/>
+        {loginMessage ? <Text style={styles.textRed}>{loginMessage}</Text> : null}
+        <TouchableOpacity onPress={handleLogin} disabled={loginLoading} style={styles.btnRed}><Text style={styles.btnText}>{loginLoading ? 'Signing inÃ¢â‚¬Â¦' : 'Sign In'}</Text></TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#080808" />
@@ -92,7 +133,7 @@ export default function MemberApp() {
           </View>
           <View>
             <Text style={styles.brandTitle}>{BRAND.name}</Text>
-            <Text style={styles.brandSubtitle}>MEMBER APP • OWNER: {BRAND.owner}</Text>
+            <Text style={styles.brandSubtitle}>MEMBER APP Ã¢â‚¬Â¢ OWNER: {BRAND.owner}</Text>
           </View>
         </View>
 
@@ -100,7 +141,7 @@ export default function MemberApp() {
           onPress={() => setCurrentTab('attendance')}
           style={styles.headerScanBtn}
         >
-          <Text style={styles.headerScanBtnText}>Scan QR</Text>
+          <Text style={styles.headerScanBtnText}>Check In</Text>
         </TouchableOpacity>
       </View>
 
@@ -112,9 +153,9 @@ export default function MemberApp() {
             {/* Greeting Banner */}
             <View style={styles.cardPrimary}>
               <Text style={styles.badgeText}>WARRIOR PROFILE</Text>
-              <Text style={styles.titleLarge}>Namaste, Rahul</Text>
+              <Text style={styles.titleLarge}>Namaste, {profile?.full_name || 'Member'}</Text>
               <Text style={styles.paragraphMuted}>
-                Goal: <Text style={styles.textRed}>Muscle Hypertrophy</Text> • Plan: Quarterly Discipline
+                Goal: <Text style={styles.textRed}>Muscle Hypertrophy</Text> Ã¢â‚¬Â¢ Plan: Quarterly Discipline
               </Text>
               <View style={styles.divider} />
               <View style={styles.rowBetween}>
@@ -127,13 +168,13 @@ export default function MemberApp() {
             <View style={styles.card}>
               <Text style={styles.cardHeader}>DAILY GYM ATTENDANCE</Text>
               <Text style={styles.paragraph}>
-                Scan the active QR screen at the reception desk to record your visit.
+                Use your member account to record today&apos;s visit securely.
               </Text>
               <TouchableOpacity
                 onPress={() => setCurrentTab('attendance')}
                 style={styles.btnRed}
               >
-                <Text style={styles.btnText}>Open QR Attendance Screen</Text>
+                <Text style={styles.btnText}>Open Attendance</Text>
               </TouchableOpacity>
             </View>
 
@@ -145,9 +186,9 @@ export default function MemberApp() {
               </View>
               <Text style={styles.titleMedium}>Barbell Bench Press &amp; Delts</Text>
               <Text style={styles.paragraphMuted}>
-                • Barbell Flat Bench: 4 sets × 8 reps{'\n'}
-                • Overhead Military Press: 3 sets × 8-10 reps{'\n'}
-                • Parallel Bar Dips: 3 sets × 12 reps
+                Ã¢â‚¬Â¢ Barbell Flat Bench: 4 sets Ãƒâ€” 8 reps{'\n'}
+                Ã¢â‚¬Â¢ Overhead Military Press: 3 sets Ãƒâ€” 8-10 reps{'\n'}
+                Ã¢â‚¬Â¢ Parallel Bar Dips: 3 sets Ãƒâ€” 12 reps
               </Text>
               <TouchableOpacity
                 onPress={() => setCurrentTab('workouts')}
@@ -174,31 +215,17 @@ export default function MemberApp() {
           </View>
         )}
 
-        {/* TAB 2: ATTENDANCE & QR SCANNER */}
+        {/* TAB 2: ATTENDANCE */}
         {currentTab === 'attendance' && (
           <View style={styles.screenSection}>
             <View style={styles.cardRedBorder}>
-              <Text style={styles.cardHeader}>QR ATTENDANCE MARKER</Text>
+              <Text style={styles.cardHeader}>MEMBER CHECK-IN</Text>
               <Text style={styles.paragraphMuted}>
-                Attendance is completely free for all members. Scan the QR token displayed on the reception desk terminal or enter the code.
+                Check in from your authenticated member account. Attendance is permanently saved to the gym database.
               </Text>
 
-              {/* QR Mock Frame */}
-              <View style={styles.qrPlaceholder}>
-                <Text style={styles.qrIconText}>[ QR TERMINAL ]</Text>
-                <Text style={styles.qrSubtext}>Camera Scanner Mode Active</Text>
-              </View>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Or paste active session token..."
-                placeholderTextColor="#777"
-                value={qrToken}
-                onChangeText={setQrToken}
-              />
-
               <TouchableOpacity onPress={handleMarkAttendance} style={styles.btnRed}>
-                <Text style={styles.btnText}>Confirm Free Attendance</Text>
+                <Text style={styles.btnText}>Check In Today</Text>
               </TouchableOpacity>
 
               {attendanceMessage && (
@@ -229,7 +256,7 @@ export default function MemberApp() {
           <View style={styles.screenSection}>
             <Text style={styles.screenTitle}>Exercise Library</Text>
             <Text style={styles.paragraphMuted}>
-              Biomechanical cues and form checklists curated by Dave.
+              Biomechanical cues and form checklists curated by Kapil Dev &amp; Dev Vats.
             </Text>
 
             {/* Muscle Filter Horizontal Scroll */}
@@ -260,7 +287,7 @@ export default function MemberApp() {
                 <View style={styles.divider} />
                 <Text style={styles.textWhiteBold}>Primary Form Cue:</Text>
                 <Text style={styles.paragraphMuted}>{ex.instructions[0]}</Text>
-                <Text style={styles.historyTime}>{ex.sets} Sets × {ex.reps} Reps</Text>
+                <Text style={styles.historyTime}>{ex.sets} Sets Ãƒâ€” {ex.reps} Reps</Text>
               </View>
             ))}
           </View>
@@ -310,9 +337,10 @@ export default function MemberApp() {
           <View style={styles.screenSection}>
             <View style={styles.cardPrimary}>
               <Text style={styles.cardHeader}>MEMBER PROFILE</Text>
-              <Text style={styles.titleLarge}>Rahul Varma</Text>
-              <Text style={styles.paragraphMuted}>rahul@example.com</Text>
-              <Text style={styles.paragraphMuted}>Member ID: mem-rahul • Enrolled: 2026-01-10</Text>
+              <Text style={styles.titleLarge}>{profile?.full_name || 'Member'}</Text>
+              <Text style={styles.paragraphMuted}>{profile?.email}</Text>
+              <Text style={styles.paragraphMuted}>Member since: {member?.join_date || "â€”"}</Text>
+              <Text style={styles.paragraphMuted}>Membership: {membershipPlan?.name || 'No active plan'} Â· Expires: {membership?.end_date || 'â€”'}</Text>
             </View>
 
             {/* Weight Logging Box */}
@@ -338,7 +366,7 @@ export default function MemberApp() {
               )}
             </View>
 
-            {/* Gym Info & Dave Front Desk */}
+            {/* Gym Info & Front Desk */}
             <View style={styles.card}>
               <Text style={styles.cardHeader}>GYM FACILITY &amp; SUPPORT</Text>
               <Text style={styles.paragraphMuted}>
@@ -358,7 +386,7 @@ export default function MemberApp() {
           <Text style={[styles.navText, currentTab === 'home' && styles.navTextActive]}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setCurrentTab('attendance')} style={styles.navItem}>
-          <Text style={[styles.navText, currentTab === 'attendance' && styles.navTextActive]}>QR Check-In</Text>
+          <Text style={[styles.navText, currentTab === 'attendance' && styles.navTextActive]}>Attendance</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setCurrentTab('workouts')} style={styles.navItem}>
           <Text style={[styles.navText, currentTab === 'workouts' && styles.navTextActive]}>Workouts</Text>
@@ -660,26 +688,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 12,
     marginTop: 8
-  },
-  qrPlaceholder: {
-    height: 120,
-    backgroundColor: '#121212',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#2e2e2e',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 12
-  },
-  qrIconText: {
-    color: '#E02025',
-    fontWeight: 'bold',
-    fontSize: 16
-  },
-  qrSubtext: {
-    color: '#777',
-    fontSize: 10,
-    marginTop: 4
   },
   msgBox: {
     backgroundColor: '#14251a',

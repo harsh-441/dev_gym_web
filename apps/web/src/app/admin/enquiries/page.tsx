@@ -33,7 +33,7 @@ export default function AdminEnquiriesPage() {
             Prospective Member Enquiries
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
-            Dave&apos;s lead capture CRM: manage web submissions, follow-up calls, and conversion notes.
+            Lead capture CRM: manage web submissions, follow-up calls, and conversion notes.
           </p>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function AdminEnquiriesPage() {
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Dave&apos;s Follow-up Notes</label>
+                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Owner Follow-up Notes</label>
                 <textarea
                   rows={3}
                   placeholder="e.g. Called and invited for floor tour on Saturday with Coach Vikram..."

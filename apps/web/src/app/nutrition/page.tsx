@@ -146,7 +146,7 @@ export default function NutritionPage() {
         {/* 4 Pillars of Indian High-Protein Nutrition */}
         <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-8">
           <h3 className="text-xl font-bold uppercase font-display text-white mb-6 text-center">
-            Coach Dave&apos;s Desi High-Protein Principles
+            Desi High-Protein Principles for Athletes
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs text-zinc-300 leading-relaxed">
             <div className="bg-[#0A1128] p-4 rounded-xl border border-[#1E305C]">

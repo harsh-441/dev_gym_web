@@ -6,13 +6,14 @@ import Footer from '@/components/Footer';
 import { BRAND } from '@parshuram/shared';
 
 export const metadata: Metadata = {
-  title: `${BRAND.name} — Inspired by Divinity. Built Through Discipline.`,
-  description: 'Premier gym and strength facility led by Dave. Featuring full athletic conditioning, powerlifting, functional training, Indian nutrition protocols, AI fitness planning, and free attendance marking.',
-  keywords: 'Parshuram Fitness Gym, Dave, strength gym, powerlifting, bodybuilding, Indian diet plans, AI fitness planner, workout programs',
+  title: `${BRAND.name} — Established 2016 in Meerut, UP | Owner: Kapil Dev`,
+  description: 'Welcome to Parshuram Fitness Club, established in 2016 in Meerut, Uttar Pradesh. Owned by Kapil Dev. Featuring cardio, strength, weight training, CrossFit, functional fitness, Karate self-defence, and 100% free daily attendance.',
+  keywords: 'Parshuram Fitness Club, Kapil Dev, Dev Vats, gym in Meerut, gym near Meerut City Public School, Ram Katori Wali Gali, strength gym, Karate training Meerut, CrossFit Meerut, powerlifting, fitness club',
   openGraph: {
-    title: `${BRAND.name} — Strength, Courage & Discipline`,
-    description: 'Transform your body and mind with elite training, verified nutrition, and personalized AI coaching.',
-    type: 'website'
+    title: `${BRAND.name} — Strength, Discipline & Self-Defence (Est. 2016)`,
+    description: 'Transform your body and mind with dedicated coaching, modern gym facilities, and Karate training in Meerut.',
+    type: 'website',
+    locale: 'en_IN'
   }
 };
 

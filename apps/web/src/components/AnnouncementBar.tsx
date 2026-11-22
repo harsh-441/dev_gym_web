@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Phone } from 'lucide-react';
+import { BRAND } from '@parshuram/shared';
 
 export default function AnnouncementBar() {
   return (
@@ -9,16 +12,25 @@ export default function AnnouncementBar() {
         <div className="flex items-center space-x-2 truncate">
           <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 animate-pulse" />
           <span className="truncate">
-            <strong className="text-[#D4AF37]">Parshuram Fitness Gym:</strong> Zero Admission Fees • 100% Free Daily Attendance Tracking for all Athletes
+            <strong className="text-[#D4AF37]">{BRAND.name}:</strong> Est. 2016 in Meerut • Morning 5:30–10:00 AM &amp; Evening 5:00–10:00 PM • 100% Free Daily Attendance Tracking
           </span>
         </div>
-        <Link
-          href="/pricing"
-          className="hidden sm:inline-flex items-center space-x-1 text-[#D4AF37] hover:underline text-[11px] font-bold uppercase tracking-wider shrink-0 ml-4"
-        >
-          <span>View Plans</span>
-          <ArrowRight className="w-3 h-3" />
-        </Link>
+        <div className="flex items-center space-x-4 shrink-0 ml-4">
+          <a
+            href="tel:9897191013"
+            className="hidden md:inline-flex items-center space-x-1 text-slate-300 hover:text-white text-[11px]"
+          >
+            <Phone className="w-3 h-3 text-[#D4AF37]" />
+            <span>9897191013</span>
+          </a>
+          <Link
+            href="/pricing"
+            className="hidden sm:inline-flex items-center space-x-1 text-[#D4AF37] hover:underline text-[11px] font-bold uppercase tracking-wider"
+          >
+            <span>Plans from ₹500</span>
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -13,20 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.parshuramgym.member",
-      "infoPlist": {
-        "NSCameraUsageDescription": "Camera permission is needed to scan the gym attendance QR code at the entrance turnstile."
-      }
+      "bundleIdentifier": "com.parshuramgym.member"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#080808"
       },
-      "package": "com.parshuramgym.member",
-      "permissions": [
-        "CAMERA"
-      ]
+      "package": "com.parshuramgym.member"
     },
     "extra": {
       "eas": {

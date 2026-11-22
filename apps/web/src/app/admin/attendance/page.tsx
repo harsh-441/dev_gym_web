@@ -1,391 +1,94 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-  QrCode,
-  CalendarCheck,
-  RefreshCw,
-  Download,
-  Filter,
-  CheckCircle2,
-  Clock,
-  ShieldAlert,
-  AlertTriangle,
-  X,
-  FileSpreadsheet
-} from 'lucide-react';
-import { api, AttendanceQRSession, MemberAttendance, StaffAttendance } from '@parshuram/shared';
+import React, { useCallback, useEffect, useState } from 'react';
+import { CalendarCheck, Download, RefreshCw, Search } from 'lucide-react';
+
+type Attendance = { id: string; member_id: string; attendance_date: string; check_in_time: string; check_in_method: string; record_source: string; members?: { profiles?: { full_name?: string; email?: string } } };
+type Member = { id: string; profiles?: { full_name?: string; email?: string } };
+const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
 
 export default function AdminAttendancePage() {
-  const [activeTab, setActiveTab] = useState<'members' | 'staff'>('members');
-  const [memberAttendance, setMemberAttendance] = useState<MemberAttendance[]>([...(api as any).store.memberAttendance]);
-  const [staffAttendance, setStaffAttendance] = useState<StaffAttendance[]>([...(api as any).store.staffAttendance]);
-  const [qrSession, setQrSession] = useState<AttendanceQRSession | null>(null);
-  const [qrDuration, setQrDuration] = useState(60);
-  const [refreshing, setRefreshing] = useState(false);
+  const [rows, setRows] = useState<Attendance[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [date, setDate] = useState(today());
+  const [month, setMonth] = useState('');
+  const [search, setSearch] = useState('');
+  const [memberId, setMemberId] = useState('');
+  const [notice, setNotice] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [working, setWorking] = useState(false);
+  const [editing, setEditing] = useState<Attendance | null>(null);
+  const [editDate, setEditDate] = useState('');
+  const [editTime, setEditTime] = useState('');
+  const [reason, setReason] = useState('');
+  const token = () => localStorage.getItem('pfg_user_token') || '';
 
-  // Correction Modal
-  const [showCorrectionModal, setShowCorrectionModal] = useState(false);
-  const [correctionTarget, setCorrectionTarget] = useState<any>(null);
-  const [correctionReason, setCorrectionReason] = useState('');
-  const [newCheckInTime, setNewCheckInTime] = useState('');
-
-  const loadData = async () => {
-    const session = await api.getActiveQRSession();
-    setQrSession(session);
-    setMemberAttendance([...(api as any).store.memberAttendance]);
-    setStaffAttendance([...(api as any).store.staffAttendance]);
-  };
-
-  useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleRefreshQR = async () => {
-    setRefreshing(true);
+  const load = useCallback(async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/attendance/qr-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ durationSeconds: qrDuration, type: 'universal' })
-      });
-      const data = await res.json();
-      if (data.session) {
-        setQrSession(data.session);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setRefreshing(false);
-    }
+      const [attendanceResponse, membersResponse] = await Promise.all([
+        fetch(`/api/attendance?${month ? `month=${encodeURIComponent(month)}` : `date=${encodeURIComponent(date)}`}&search=${encodeURIComponent(search)}`, { headers: { Authorization: `Bearer ${token()}` }, cache: 'no-store' }),
+        fetch('/api/admin/members', { headers: { Authorization: `Bearer ${token()}` }, cache: 'no-store' })
+      ]);
+      const attendanceData = await attendanceResponse.json();
+      const memberData = await membersResponse.json();
+      if (!attendanceResponse.ok) throw new Error(attendanceData.error || 'Could not load attendance.');
+      setRows(attendanceData.attendance || []);
+      setMembers((memberData.members || []).map((member: any) => ({ ...member, profiles: memberData.profiles?.find((profile: any) => profile.id === member.profile_id) })));
+    } catch (error: any) { setNotice(error.message || 'Could not load attendance.'); }
+    finally { setLoading(false); }
+  }, [date, month, search]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const markManual = async (event: React.FormEvent) => {
+    event.preventDefault(); setNotice(''); setWorking(true);
+    try {
+      const response = await fetch('/api/attendance', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` }, body: JSON.stringify({ memberId, date }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not record attendance.');
+      setNotice(result.message); await load();
+    } catch (error: any) { setNotice(error.message || 'Could not record attendance.'); }
+    finally { setWorking(false); }
   };
 
-  const handleExportCSV = () => {
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    if (activeTab === 'members') {
-      csvContent += 'ID,Member_ID,CheckIn_Time,CheckIn_Method,Status\n';
-      memberAttendance.forEach((a) => {
-        csvContent += `${a.id},${a.member_id},${a.check_in_time},${a.check_in_method},${a.status}\n`;
-      });
-    } else {
-      csvContent += 'ID,Employee_ID,CheckIn_Time,CheckOut_Time,Shift_Hours,Status\n';
-      staffAttendance.forEach((a) => {
-        csvContent += `${a.id},${a.employee_id},${a.check_in_time},${a.check_out_time || 'ACTIVE'},${a.shift_hours || '—'},${a.status}\n`;
-      });
-    }
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `parshuram_gym_${activeTab}_attendance_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const saveCorrection = async (event: React.FormEvent) => {
+    event.preventDefault(); if (!editing) return; setWorking(true); setNotice('');
+    try {
+      const time = new Date(`${editDate}T${editTime}:00+05:30`).toISOString();
+      const response = await fetch(`/api/attendance/${encodeURIComponent(editing.id)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` }, body: JSON.stringify({ date: editDate, checkInTime: time, reason }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Could not correct attendance.');
+      setEditing(null); setNotice('Attendance correction saved.'); await load();
+    } catch (error: any) { setNotice(error.message || 'Could not correct attendance.'); }
+    finally { setWorking(false); }
   };
 
-  const handleOpenCorrection = (record: any) => {
-    setCorrectionTarget(record);
-    setNewCheckInTime(record.check_in_time);
-    setCorrectionReason('');
-    setShowCorrectionModal(true);
+  const exportCsv = () => {
+    const escape = (value: unknown) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+    const data = [['Member', 'Member ID', 'Date', 'Check-in time', 'Source'], ...rows.map(row => [row.members?.profiles?.full_name, row.member_id, row.attendance_date, row.check_in_time, row.record_source])];
+    const blob = new Blob([data.map(line => line.map(escape).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `attendance-${month || date}.csv`; link.click(); URL.revokeObjectURL(link.href);
   };
 
-  const handleSaveCorrection = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!correctionTarget || !correctionReason || !newCheckInTime) return;
-
-    if (activeTab === 'members') {
-      const rec = memberAttendance.find((m) => m.id === correctionTarget.id);
-      if (rec) rec.check_in_time = new Date(newCheckInTime).toISOString();
-      setMemberAttendance([...memberAttendance]);
-    } else {
-      const rec = staffAttendance.find((s) => s.id === correctionTarget.id);
-      if (rec) rec.check_in_time = new Date(newCheckInTime).toISOString();
-      setStaffAttendance([...staffAttendance]);
-    }
-
-    setShowCorrectionModal(false);
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#101B37] p-6 rounded-2xl border border-[#1E305C] shadow-xl">
-        <div>
-          <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">Module C</span>
-          <h1 className="text-2xl font-black uppercase font-display text-white mt-0.5">
-            Attendance &amp; Live QR Terminal
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Server-recorded timestamps, anti-spoofing rotating tokens, separate staff shifts, and audit logs.
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-2.5">
-          <button
-            onClick={handleExportCSV}
-            className="px-3.5 py-2.5 rounded-xl bg-[#0A1128] hover:bg-zinc-800 border border-[#1E305C] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-1.5"
-          >
-            <Download className="w-4 h-4 text-gym-silver" />
-            <span>Export CSV</span>
-          </button>
-        </div>
-      </div>
-
-      {/* QR Control & Terminal Display */}
-      <div className="bg-[#101B37] rounded-2xl border border-[#D4AF37]/50 p-6 shadow-xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <div className="lg:col-span-4 flex flex-col items-center text-center">
-            <div className="p-4 bg-white rounded-2xl shadow-xl border-4 border-[#D4AF37] inline-block mb-3">
-              <QrCode className="w-40 h-40 text-black" />
-            </div>
-            <span className="text-[10px] font-mono font-bold text-gym-silver bg-[#050B17] px-3 py-1 rounded border border-[#1E305C]">
-              TOKEN: {qrSession?.token}
-            </span>
-          </div>
-
-          <div className="lg:col-span-8 space-y-4 border-t lg:border-t-0 lg:border-l border-[#1E305C] pt-6 lg:pt-0 lg:pl-8 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-xs uppercase font-bold text-[#D4AF37] tracking-wider">
-                Front Entrance Terminal Controller
-              </span>
-              <span className="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800 font-bold uppercase">
-                Session Active
-              </span>
-            </div>
-
-            <p className="text-zinc-300 leading-relaxed">
-              Display this QR terminal at the Parshuram Gym reception desk. Members scan with the Member Mobile App to mark their <strong>100% free</strong> gym visit. Employees scan with the Employee App to begin/end their shift.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#0A1128] p-4 rounded-xl border border-[#1E305C]">
-              <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">
-                  Token Validity Window (Seconds)
-                </label>
-                <select
-                  value={qrDuration}
-                  onChange={(e) => setQrDuration(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-[#050B17] border border-[#1E305C] text-white text-xs focus:border-[#D4AF37] focus:outline-none"
-                >
-                  <option value={30}>30 Seconds (Strict Security)</option>
-                  <option value={60}>60 Seconds (Recommended)</option>
-                  <option value={120}>120 Seconds (High Traffic)</option>
-                </select>
-              </div>
-
-              <div className="flex flex-col justify-end">
-                <button
-                  onClick={handleRefreshQR}
-                  disabled={refreshing}
-                  className="w-full py-2.5 rounded-lg bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center space-x-1.5 shadow-md shadow-black/60"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-                  <span>Generate New QR Token</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 text-[11px] text-zinc-400">
-              <ShieldAlert className="w-4 h-4 text-gym-silver shrink-0" />
-              <span>Duplicate check-ins are blocked automatically by the server.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs for Member vs Staff Attendance */}
-      <div className="flex border-b border-[#1E305C]">
-        <button
-          onClick={() => setActiveTab('members')}
-          className={`py-3 px-6 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
-            activeTab === 'members'
-              ? 'border-[#D4AF37] text-[#D4AF37]'
-              : 'border-transparent text-zinc-400 hover:text-white'
-          }`}
-        >
-          Member Gym Visits ({memberAttendance.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('staff')}
-          className={`py-3 px-6 text-xs font-bold uppercase tracking-wider transition-all border-b-2 ${
-            activeTab === 'staff'
-              ? 'border-[#D4AF37] text-[#D4AF37]'
-              : 'border-transparent text-zinc-400 hover:text-white'
-          }`}
-        >
-          Staff Shift Clock-In/Out ({staffAttendance.length})
-        </button>
-      </div>
-
-      {/* Attendance Records Table */}
-      <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#0A1128] text-zinc-400 uppercase font-bold text-[10px] border-b border-[#1E305C]">
-              {activeTab === 'members' ? (
-                <tr>
-                  <th className="py-3.5 px-4">Member Name</th>
-                  <th className="py-3.5 px-4">Check-In Time</th>
-                  <th className="py-3.5 px-4">Method</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 text-right">Audit &amp; Correction</th>
-                </tr>
-              ) : (
-                <tr>
-                  <th className="py-3.5 px-4">Staff Member</th>
-                  <th className="py-3.5 px-4">Check-In Time</th>
-                  <th className="py-3.5 px-4">Check-Out Time</th>
-                  <th className="py-3.5 px-4">Total Hours</th>
-                  <th className="py-3.5 px-4">Shift Status</th>
-                  <th className="py-3.5 px-4 text-right">Audit &amp; Correction</th>
-                </tr>
-              )}
-            </thead>
-            <tbody className="divide-y divide-gym-border">
-              {activeTab === 'members' ? (
-                memberAttendance.map((rec) => {
-                  const member = (api as any).store.members.find((m: any) => m.id === rec.member_id);
-                  const profile = member
-                    ? (api as any).store.profiles.find((p: any) => p.id === member.profile_id)
-                    : null;
-
-                  return (
-                    <tr key={rec.id} className="hover:bg-[#0A1128]/40 transition-colors">
-                      <td className="py-3.5 px-4">
-                        <span className="font-bold text-white block">{profile?.full_name || 'Member'}</span>
-                        <span className="text-[10px] text-zinc-400">{profile?.email}</span>
-                      </td>
-                      <td className="py-3.5 px-4 text-zinc-300">
-                        {new Date(rec.check_in_time).toLocaleString()}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="text-[10px] font-bold uppercase text-gym-silver bg-[#0A1128] px-2 py-0.5 rounded border border-[#1E305C]">
-                          {rec.check_in_method}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="text-[10px] font-bold uppercase text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800">
-                          {rec.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button
-                          onClick={() => handleOpenCorrection(rec)}
-                          className="px-2.5 py-1 rounded bg-[#0A1128] border border-[#1E305C] text-zinc-300 hover:text-white text-[11px] font-semibold"
-                        >
-                          Manual Correction
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                staffAttendance.map((rec) => {
-                  const emp = (api as any).store.employees.find((e: any) => e.id === rec.employee_id);
-                  const profile = emp
-                    ? (api as any).store.profiles.find((p: any) => p.id === emp.profile_id)
-                    : null;
-
-                  return (
-                    <tr key={rec.id} className="hover:bg-[#0A1128]/40 transition-colors">
-                      <td className="py-3.5 px-4">
-                        <span className="font-bold text-white block">{profile?.full_name || 'Staff Member'}</span>
-                        <span className="text-[10px] text-zinc-400">{emp?.designation}</span>
-                      </td>
-                      <td className="py-3.5 px-4 text-zinc-300">
-                        {new Date(rec.check_in_time).toLocaleString()}
-                      </td>
-                      <td className="py-3.5 px-4 text-zinc-300">
-                        {rec.check_out_time ? new Date(rec.check_out_time).toLocaleString() : 'Shift In Progress'}
-                      </td>
-                      <td className="py-3.5 px-4 font-bold text-white">
-                        {rec.shift_hours ? `${rec.shift_hours} hrs` : 'Active'}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="text-[10px] font-bold uppercase text-gym-silver bg-[#0A1128] px-2 py-0.5 rounded border border-[#1E305C]">
-                          {rec.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <button
-                          onClick={() => handleOpenCorrection(rec)}
-                          className="px-2.5 py-1 rounded bg-[#0A1128] border border-[#1E305C] text-zinc-300 hover:text-white text-[11px] font-semibold"
-                        >
-                          Manual Correction
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Attendance Correction Modal with Audit Log */}
-      {showCorrectionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-[#1E305C] pb-3 mb-4">
-              <h3 className="text-base font-bold uppercase font-display text-white">
-                Authorized Attendance Correction
-              </h3>
-              <button onClick={() => setShowCorrectionModal(false)} className="text-zinc-400 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveCorrection} className="space-y-4 text-xs">
-              <div className="bg-[#0A1128] p-3 rounded-lg border border-[#1E305C]">
-                <p className="text-zinc-300">
-                  Target Record: <span className="font-bold text-white">{correctionTarget?.id}</span>
-                </p>
-                <p className="text-[10px] text-zinc-400 mt-1">
-                  Original Time: {new Date(correctionTarget?.check_in_time).toLocaleString()}
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">New Check-In Timestamp</label>
-                <input
-                  type="datetime-local"
-                  required
-                  value={newCheckInTime ? new Date(newCheckInTime).toISOString().slice(0, 16) : ''}
-                  onChange={(e) => setNewCheckInTime(new Date(e.target.value).toISOString())}
-                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white focus:border-[#D4AF37] focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Reason for Dave&apos;s Correction (Audit Log)</label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder="e.g. Member phone ran out of battery at turnstile; verified by front desk..."
-                  value={correctionReason}
-                  onChange={(e) => setCorrectionReason(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white placeholder-zinc-500 focus:border-[#D4AF37] focus:outline-none"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center space-x-2">
-                <button
-                  type="submit"
-                  className="w-full py-2.5 rounded-xl bg-[#D4AF37] text-[#050B17] hover:bg-[#D4AF37] text-[#050B17]Hover text-white font-bold uppercase tracking-wider transition-colors"
-                >
-                  Save &amp; Log Audit Record
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+  return <div className="space-y-6">
+    <header className="rounded-2xl border border-[#1E305C] bg-[#101B37] p-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div><span className="text-xs uppercase font-bold text-[#D4AF37]">Member attendance</span><h1 className="mt-1 text-2xl font-black uppercase">Attendance history</h1><p className="mt-1 text-xs text-slate-400">Daily and historical records, manual entry, corrections, and CSV export.</p></div>
+      <button onClick={exportCsv} disabled={!rows.length} className="flex items-center justify-center gap-2 rounded-lg border border-[#1E305C] px-4 py-2 text-xs font-bold disabled:opacity-50"><Download className="h-4 w-4"/>Export CSV</button>
+    </header>
+    <form onSubmit={markManual} className="grid gap-3 rounded-2xl border border-[#1E305C] bg-[#101B37] p-5 md:grid-cols-[1fr_180px_auto]">
+      <label className="text-[11px] font-bold uppercase text-slate-300">Member<select required value={memberId} onChange={event => setMemberId(event.target.value)} className="mt-2 w-full rounded-lg border border-[#1E305C] bg-[#0A1128] px-3 py-2.5 text-sm text-white"><option value="">Select a member</option>{members.map(member => <option key={member.id} value={member.id}>{member.profiles?.full_name || member.profiles?.email || member.id}</option>)}</select></label>
+      <label className="text-[11px] font-bold uppercase text-slate-300">Attendance date<input required type="date" value={date} onChange={event => { setDate(event.target.value); setMonth(''); }} className="mt-2 w-full rounded-lg border border-[#1E305C] bg-[#0A1128] px-3 py-2.5 text-sm text-white"/></label>
+      <button disabled={working || !memberId} className="self-end rounded-lg bg-[#D4AF37] px-4 py-3 text-xs font-black uppercase text-[#050B17] disabled:opacity-50">{working ? 'Saving…' : 'Mark attendance'}</button>
+    </form>
+    <div className="flex flex-col gap-3 rounded-2xl border border-[#1E305C] bg-[#101B37] p-4 sm:flex-row">
+      <label className="flex items-center gap-2 rounded-lg border border-[#1E305C] bg-[#0A1128] px-3"><CalendarCheck className="h-4 w-4 text-[#D4AF37]"/><input aria-label="Filter attendance date" type="date" value={date} onChange={event => setDate(event.target.value)} className="bg-transparent py-2.5 text-sm text-white outline-none"/></label>
+      <label className="flex items-center gap-2 rounded-lg border border-[#1E305C] bg-[#0A1128] px-3 text-xs text-slate-400">Month<input aria-label="Filter attendance month" type="month" value={month} onChange={event => setMonth(event.target.value)} className="bg-transparent py-2.5 text-sm text-white outline-none"/></label>
+      <label className="flex flex-1 items-center gap-2 rounded-lg border border-[#1E305C] bg-[#0A1128] px-3"><Search className="h-4 w-4 text-slate-400"/><input aria-label="Search member attendance" placeholder="Search by member name or ID" value={search} onChange={event => setSearch(event.target.value)} className="w-full bg-transparent py-2.5 text-sm text-white outline-none"/></label>
+      <button onClick={load} className="rounded-lg border border-[#1E305C] px-4 py-2 text-xs font-bold"><RefreshCw className="mr-2 inline h-4 w-4"/>Refresh</button>
     </div>
-  );
+    {notice && <p role="status" className="rounded-lg border border-[#1E305C] bg-[#0A1128] p-3 text-sm text-slate-200">{notice}</p>}
+    <div className="overflow-x-auto rounded-2xl border border-[#1E305C] bg-[#101B37]"><table className="w-full min-w-[720px] text-left text-sm"><thead className="bg-[#0A1128] text-[10px] uppercase text-slate-400"><tr><th className="p-4">Member</th><th className="p-4">Member ID</th><th className="p-4">Date</th><th className="p-4">Check-in time</th><th className="p-4">Recorded by</th><th className="p-4">Action</th></tr></thead><tbody className="divide-y divide-[#1E305C]">{loading ? <tr><td colSpan={6} className="p-8 text-center text-slate-400">Loading attendance…</td></tr> : rows.length ? rows.map(row => <tr key={row.id}><td className="p-4">{row.members?.profiles?.full_name || 'Member'}</td><td className="p-4 font-mono text-xs">{row.member_id}</td><td className="p-4">{row.attendance_date}</td><td className="p-4">{new Date(row.check_in_time).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })}</td><td className="p-4 capitalize">{row.record_source === 'owner' ? 'Owner manual' : 'Member check-in'}</td><td className="p-4"><button onClick={() => { setEditing(row); setEditDate(row.attendance_date); setEditTime(new Date(row.check_in_time).toLocaleTimeString('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' })); setReason(''); }} className="font-bold text-[#D4AF37]">Correct</button></td></tr>) : <tr><td colSpan={6} className="p-8 text-center text-slate-400">No attendance records for this date.</td></tr>}</tbody></table></div>
+    {editing && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"><form onSubmit={saveCorrection} className="w-full max-w-md space-y-4 rounded-2xl border border-[#1E305C] bg-[#101B37] p-6"><h2 className="text-lg font-black">Correct attendance</h2><label className="block text-xs">Date<input type="date" required value={editDate} onChange={event => setEditDate(event.target.value)} className="mt-1 w-full rounded border border-[#1E305C] bg-[#0A1128] p-2"/></label><label className="block text-xs">Check-in time<input type="time" required value={editTime} onChange={event => setEditTime(event.target.value)} className="mt-1 w-full rounded border border-[#1E305C] bg-[#0A1128] p-2"/></label><label className="block text-xs">Reason<input required minLength={3} maxLength={500} value={reason} onChange={event => setReason(event.target.value)} className="mt-1 w-full rounded border border-[#1E305C] bg-[#0A1128] p-2"/></label><div className="flex justify-end gap-2"><button type="button" onClick={() => setEditing(null)} className="rounded border border-[#1E305C] px-4 py-2 text-xs">Cancel</button><button disabled={working} className="rounded bg-[#D4AF37] px-4 py-2 text-xs font-black text-[#050B17]">Save correction</button></div></form></div>}
+  </div>;
 }
-
-

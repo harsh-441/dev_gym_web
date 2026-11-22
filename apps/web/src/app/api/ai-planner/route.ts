@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
               {
                 role: 'system',
                 content:
-                  'You are an expert sports nutritionist and strength architect for Parshuram Fitness Gym (Owner: Dave). Generate a detailed, culturally rich Indian nutrition and progressive resistance workout plan adhering strictly to safety guidelines. Return strictly valid JSON.'
+                  'You are an expert sports nutritionist and strength architect for Parshuram Fitness Club (Owner: Kapil Dev). Generate a detailed, culturally rich Indian nutrition and progressive resistance workout plan adhering strictly to safety guidelines. Return strictly valid JSON.'
               },
               {
                 role: 'user',

@@ -1,10 +1,9 @@
-// Brand Constants, Seed Catalogs & Initial Values for Parshuram Fitness Gym
+// Brand Constants, Seed Catalogs & Initial Values for Parshuram Fitness Club
 
 import {
   AppSettings,
   DietPlan,
   Exercise,
-  LeaveType,
   MembershipPlan,
   Trainer,
   WorkoutProgram,
@@ -12,118 +11,143 @@ import {
 } from '../types';
 
 export const BRAND = {
-  name: 'PARSHURAM FITNESS GYM',
+  name: 'PARSHURAM FITNESS CLUB',
+  established: 2016,
   tagline: 'INSPIRED BY DIVINITY. BUILT THROUGH DISCIPLINE.',
-  owner: 'Dave',
+  owner: 'Kapil Dev',
+  contactPersons: ['Kapil Dev', 'Dev Vats'],
+  email: 'vdev6514@gmail.com',
+  phonePrimary: '9897191013',
+  phoneSecondary: '7983626564',
+  whatsappPrimary: '9897191013',
+  whatsappSecondary: '7983626564',
+  address: 'Ram Katori Wali Gali, Near Meerut City Public School, Meerut, Uttar Pradesh, India',
+  landmark: 'Near Meerut City Public School',
+  city: 'Meerut, Uttar Pradesh, India',
+  googleMapsSearchUrl: 'https://www.google.com/maps/search/?api=1&query=Parshuram+Fitness+Club%2C+Ram+Katori+Wali+Gali%2C+Meerut',
+  instagram: 'https://instagram.com/parshuram_fitness_club',
+  openingHours: {
+    weekdays: 'Morning: 5:30 AM – 10:00 AM | Evening: 5:00 PM – 10:00 PM',
+    sunday: 'CLOSED',
+    holidayNotice: 'Holiday information: The gym informs members one day before a holiday.'
+  },
   colors: {
-    black: '#080808',
-    charcoal: '#171717',
-    card: '#222222',
-    athleticRed: '#E02025',
-    accentRed: '#FF2E36',
-    metallicSilver: '#C0C0C0',
+    black: '#050B17',
+    charcoal: '#0A1128',
+    card: '#101B37',
+    athleticRed: '#D4AF37',
+    accentRed: '#E5C158',
+    metallicSilver: '#CBD5E1',
     white: '#FFFFFF',
-    textMuted: '#A0A0A0'
+    textMuted: '#94A3B8'
   }
 };
 
 export const DEFAULT_APP_SETTINGS: AppSettings = {
-  gym_name: 'PARSHURAM FITNESS GYM',
+  gym_name: 'PARSHURAM FITNESS CLUB',
   tagline: 'INSPIRED BY DIVINITY. BUILT THROUGH DISCIPLINE.',
-  owner_name: 'Dave',
-  contact_phone: '+91 98765 43210 (Placeholder - update in Admin)',
-  contact_email: 'contact@parshuramgym.placeholder',
-  address_line1: 'Plot 42, Divine Strength Avenue, Fitness District (Placeholder)',
-  city: 'New Delhi, India (Placeholder)',
-  opening_hours_weekdays: '05:30 AM - 10:30 PM',
-  opening_hours_weekends: '06:00 AM - 09:00 PM',
-  qr_token_validity_seconds: 60,
-  enable_manual_checkin: true,
+  owner_name: 'Kapil Dev',
+  contact_phone: '9897191013, 7983626564',
+  contact_email: 'vdev6514@gmail.com',
+  address_line1: 'Ram Katori Wali Gali, Near Meerut City Public School',
+  city: 'Meerut, Uttar Pradesh, India',
+  opening_hours_weekdays: 'Morning: 5:30 AM – 10:00 AM | Evening: 5:00 PM – 10:00 PM',
+  opening_hours_weekends: 'Sunday: CLOSED',
   late_threshold_minutes: 15,
-  announcement_banner: 'Welcome to Parshuram Fitness Gym - Build Strength Through Discipline!'
+  announcement_banner: 'Welcome to Parshuram Fitness Club, Meerut! Morning: 5:30 AM – 10:00 AM | Evening: 5:00 PM – 10:00 PM'
 };
-
-export const INITIAL_LEAVE_TYPES: LeaveType[] = [
-  {
-    id: 'lt-1',
-    name: 'Casual Leave',
-    description: 'General personal time off with prior notice',
-    max_days_per_year: 12,
-    is_paid: true,
-    created_at: '2026-01-01T00:00:00Z'
-  },
-  {
-    id: 'lt-2',
-    name: 'Sick Leave',
-    description: 'Medical or health recuperation leave',
-    max_days_per_year: 10,
-    is_paid: true,
-    created_at: '2026-01-01T00:00:00Z'
-  },
-  {
-    id: 'lt-3',
-    name: 'Emergency Leave',
-    description: 'Urgent unplanned domestic or medical situations',
-    max_days_per_year: 5,
-    is_paid: true,
-    created_at: '2026-01-01T00:00:00Z'
-  },
-  {
-    id: 'lt-4',
-    name: 'Unpaid Extended Leave',
-    description: 'Extended leaves beyond annual quota subject to Dave approval',
-    max_days_per_year: 30,
-    is_paid: false,
-    created_at: '2026-01-01T00:00:00Z'
-  }
-];
 
 export const INITIAL_MEMBERSHIP_PLANS: MembershipPlan[] = [
   {
     id: 'plan-monthly',
-    name: 'Monthly Warrior Plan',
-    description: 'Full gym floor and cardio access on a flexible monthly basis',
+    name: 'Monthly Membership',
+    description: 'Full gym floor, strength and cardio access on a flexible monthly basis',
     duration_months: 1,
-    price: 1999, // Placeholder for Dave
+    price: 500,
     features: [
       'Unlimited gym floor access',
-      'Free daily attendance check-in',
-      'Locker room & shower access',
-      'Basic fitness assessment',
-      'Access to Mobile App'
+      'Free daily attendance tracking',
+      'Cardio & weight training equipment',
+      'CrossFit & functional movement floor',
+      'Karate training guidance included',
+      'Mobile app dashboard access'
     ],
     is_active: true,
     created_at: '2026-01-01T00:00:00Z'
   },
   {
-    id: 'plan-quarterly',
-    name: 'Quarterly Discipline Plan',
-    description: 'Ideal 3-month commitment for visible body transformation',
+    id: 'plan-3months',
+    name: '3 Months Membership',
+    description: '3-month commitment for dedicated body conditioning and transformation',
     duration_months: 3,
-    price: 4999, // Placeholder for Dave
+    price: 1300,
     features: [
-      'All Warrior Plan benefits',
-      'Customized AI workout & diet plan',
-      'Monthly body composition review',
-      'Trainer guidance on compound lifts',
-      '1 Guest pass per month'
+      'All Monthly Membership benefits',
+      'Discounted quarterly rate (Save ₹200)',
+      'Free workout & nutrition guidance',
+      'Special Offer: Eligible for Gym Bag promotion',
+      'Karate discipline & self-defense sessions'
     ],
     is_active: true,
     created_at: '2026-01-01T00:00:00Z'
   },
   {
-    id: 'plan-annual',
-    name: 'Annual Divine Elite Plan',
-    description: 'The ultimate year-long transformation package for dedicated athletes',
-    duration_months: 12,
-    price: 14999, // Placeholder for Dave
+    id: 'plan-6months',
+    name: '6 Months Membership',
+    description: 'Half-year training package designed for serious athletes and continuous progress',
+    duration_months: 6,
+    price: 2500,
     features: [
-      'All Discipline Plan benefits',
-      'Priority personal trainer sessions (2 per quarter)',
-      'Quarterly personalized nutrition overhaul',
-      'Exclusive Parshuram Gym Warrior Jersey',
-      'Unlimited guest weekend passes',
-      'Zero freeze fees (up to 45 days)'
+      'All 3-Month Membership benefits',
+      'Extended discount rate (Save ₹500)',
+      'Special Offer: Parshuram Fitness Gym Bag included',
+      'Continuous coach guidance & form checks',
+      'Complete strength, functional & cardio access'
+    ],
+    is_active: true,
+    created_at: '2026-01-01T00:00:00Z'
+  },
+  {
+    id: 'plan-yearly',
+    name: 'Yearly Membership',
+    description: 'Complete 12-month transformation membership with maximum savings',
+    duration_months: 12,
+    price: 5000,
+    features: [
+      'Full 365-day gym access',
+      'Best value package (Only ~₹416/month)',
+      'Complimentary Gym Bag bonus',
+      'Strength, CrossFit, Cardio & Karate',
+      'Priority guidance from Kapil Dev & Dev Vats'
+    ],
+    is_active: true,
+    created_at: '2026-01-01T00:00:00Z'
+  },
+  {
+    id: 'plan-registration',
+    name: 'Registration Fee',
+    description: 'One-time admission registration fee for newly enrolled members',
+    duration_months: 0,
+    price: 100,
+    features: [
+      'One-time initial enrollment fee',
+      'Member ID card and digital profile setup',
+      'Member portal attendance history'
+    ],
+    is_active: true,
+    created_at: '2026-01-01T00:00:00Z'
+  },
+  {
+    id: 'plan-pt',
+    name: 'Personal Training',
+    description: 'One-on-one coaching and dedicated workout instruction (Billing cycle subject to owner confirmation)',
+    duration_months: 1,
+    price: 3000,
+    features: [
+      'Dedicated one-on-one trainer attention',
+      'Customized workout & nutrition regimen',
+      'Biomechanics and posture correction',
+      'Note: Billing period must be confirmed with owner Kapil Dev'
     ],
     is_active: true,
     created_at: '2026-01-01T00:00:00Z'
@@ -549,33 +573,23 @@ export const INITIAL_DIET_PLANS: DietPlan[] = [
 export const INITIAL_TRAINERS: Trainer[] = [
   {
     id: 'tr-1',
-    employee_id: 'emp-dave',
-    specializations: ['Master Strength & Conditioning', 'Compound Movement Mechanics', 'Hypertrophy Periodization'],
-    certifications: ['CSCS (Certified Strength and Conditioning Specialist)', 'Olympic Weightlifting Level 2'],
-    experience_years: 14,
-    bio: 'Dave is the founder and head coach of Parshuram Fitness Gym. Believing strongly in discipline as divine worship, Dave has trained over 1,500 athletes and everyday lifters to peak human performance.',
-    rating: 4.98,
+    employee_id: 'emp-kapil',
+    specializations: ['Strength & Weight Training', 'Cardio & Conditioning', 'CrossFit & Functional Training'],
+    certifications: ['Certified Fitness Coach', 'Owner & Head Trainer (Parshuram Fitness Club)'],
+    experience_years: 3,
+    bio: 'Kapil Dev is the owner and coach of Parshuram Fitness Club, established in 2016 in Meerut. With 3 years of dedicated hands-on coaching, Kapil leads members with discipline, personalized guidance, and supportive strength building.',
+    rating: 5.0,
     photo_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'
   },
   {
     id: 'tr-2',
-    employee_id: 'emp-vikram',
-    specializations: ['Powerlifting', 'Deadlift & Squat Form Optimization', 'Rehabilitation & Posture'],
-    certifications: ['IPF Certified Coach', 'Kinesiology & Movement Science'],
-    experience_years: 9,
-    bio: 'Vikram specializes in heavy compound lifting, injury rehabilitation, and safe progression. He ensures every member masters pristine biomechanics before loading iron.',
-    rating: 4.92,
+    employee_id: 'emp-dev-vats',
+    specializations: ['Functional & Strength Training', 'Cardio Conditioning', 'Karate Training & Self-Defence'],
+    certifications: ['Fitness Coach', '8th Dan Black Belt (Specific coach qualification subject to owner verification)'],
+    experience_years: 3,
+    bio: 'Dev Vats is a dedicated coach at Parshuram Fitness Club with 3 years of coaching experience, helping athletes build confidence, physical resilience, and disciplined functional fitness.',
+    rating: 4.9,
     photo_url: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=600&q=80'
-  },
-  {
-    id: 'tr-3',
-    employee_id: 'emp-priya',
-    specializations: ['Functional Mobility', 'HIIT & Fat Loss Conditioning', 'Women Strength Training'],
-    certifications: ['ACE Certified Personal Trainer', 'Precision Nutrition Level 1'],
-    experience_years: 7,
-    bio: 'Priya blends functional athleticism with tailored nutrition strategies. Her high-energy conditioning classes build lean, resilient, and agile bodies.',
-    rating: 4.95,
-    photo_url: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&w=600&q=80'
   }
 ];
 

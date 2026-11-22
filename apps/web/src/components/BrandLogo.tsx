@@ -4,13 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 
 interface BrandLogoProps {
-  variant?: 'navbar' | 'footer' | 'auth' | 'compact';
+  variant?: 'navbar' | 'footer' | 'auth' | 'compact' | 'icon';
   className?: string;
 }
 
 export default function BrandLogo({ variant = 'navbar', className = '' }: BrandLogoProps) {
-  // SVG Icon: The Divine Parshu (Battle Axe of Parshuram) combined with an Iron Barbell Plate Disc
-  // Styled with Champagne Gold & Deep Navy for an international luxury fitness aesthetic
+  // SVG Icon: The Divine Parshu (Battle Axe of Parshuram) combined with an Olympic Iron Barbell Plate Disc
+  // Styled in Deep Navy, Crisp Silver, and Champagne Gold
   const Emblem = ({ size = 40 }: { size?: number }) => (
     <svg
       width={size}
@@ -21,12 +21,12 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
       className="shrink-0 transition-transform duration-300 group-hover:scale-105"
     >
       <defs>
-        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="pfcGold" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#F5E6B3" />
           <stop offset="45%" stopColor="#D4AF37" />
           <stop offset="100%" stopColor="#997D29" />
         </linearGradient>
-        <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="pfcNavy" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#1E305C" />
           <stop offset="100%" stopColor="#050B17" />
         </linearGradient>
@@ -35,8 +35,8 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
       {/* Hexagonal Iron Shield Background */}
       <polygon
         points="50,4 90,26 90,74 50,96 10,74 10,26"
-        fill="url(#navyGrad)"
-        stroke="url(#goldGrad)"
+        fill="url(#pfcNavy)"
+        stroke="url(#pfcGold)"
         strokeWidth="3.5"
       />
 
@@ -44,13 +44,12 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
       <circle cx="50" cy="50" r="32" stroke="#CBD5E1" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
 
       {/* Symmetric Divine Axe Blades (Parshu) & Weight Bar Motif */}
-      {/* Central Handle / Olympic Bar */}
-      <rect x="47" y="18" width="6" height="64" rx="3" fill="url(#goldGrad)" />
+      <rect x="47" y="18" width="6" height="64" rx="3" fill="url(#pfcGold)" />
       
       {/* Left Blade Curve */}
       <path
         d="M47 30 C30 30 22 42 22 52 C22 62 30 70 47 70 Z"
-        fill="url(#goldGrad)"
+        fill="url(#pfcGold)"
         opacity="0.9"
       />
       {/* Left Inner Cutout */}
@@ -62,7 +61,7 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
       {/* Right Counterbalance Blade Curve */}
       <path
         d="M53 30 C70 30 78 42 78 52 C78 62 70 70 53 70 Z"
-        fill="url(#goldGrad)"
+        fill="url(#pfcGold)"
         opacity="0.9"
       />
       {/* Right Inner Cutout */}
@@ -72,12 +71,12 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
       />
 
       {/* Center Iron Hub */}
-      <circle cx="50" cy="50" r="8" fill="#F1F5F9" stroke="url(#goldGrad)" strokeWidth="2.5" />
+      <circle cx="50" cy="50" r="8" fill="#F1F5F9" stroke="url(#pfcGold)" strokeWidth="2.5" />
       <circle cx="50" cy="50" r="3.5" fill="#0A1128" />
 
       {/* Divine Crown Points */}
-      <polygon points="50,14 46,21 54,21" fill="url(#goldGrad)" />
-      <polygon points="50,86 46,79 54,79" fill="url(#goldGrad)" />
+      <polygon points="50,14 46,21 54,21" fill="url(#pfcGold)" />
+      <polygon points="50,86 46,79 54,79" fill="url(#pfcGold)" />
     </svg>
   );
 
@@ -92,6 +91,14 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
     );
   }
 
+  if (variant === 'icon') {
+    return (
+      <Link href="/" aria-label="Parshuram Fitness Club home" className={`flex items-center group shrink-0 ${className}`}>
+        <Emblem size={42} />
+      </Link>
+    );
+  }
+
   if (variant === 'auth') {
     return (
       <div className={`flex flex-col items-center text-center ${className}`}>
@@ -99,10 +106,10 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
           <Emblem size={56} />
         </div>
         <h2 className="font-display font-black text-2xl text-white tracking-wider uppercase">
-          PARSHURAM <span className="text-[#D4AF37]">FITNESS</span>
+          PARSHURAM <span className="text-[#D4AF37]">FITNESS</span> CLUB
         </h2>
         <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#CBD5E1] mt-1 block">
-          Divine Discipline • Elite Strength
+          Est. 2016 • Meerut, UP • Owner: Kapil Dev
         </span>
       </div>
     );
@@ -114,10 +121,10 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
         <Emblem size={44} />
         <div>
           <span className="block font-display font-black text-xl text-white tracking-wider uppercase">
-            PARSHURAM <span className="text-[#D4AF37]">FITNESS</span> GYM
+            PARSHURAM <span className="text-[#D4AF37]">FITNESS</span> CLUB
           </span>
           <span className="block text-[11px] font-semibold text-[#CBD5E1] tracking-widest uppercase">
-            Founded &amp; Directed by Dave • Elite Facility
+            Est. 2016 • Meerut • Owner: Kapil Dev
           </span>
         </div>
       </div>
@@ -130,10 +137,10 @@ export default function BrandLogo({ variant = 'navbar', className = '' }: BrandL
       <Emblem size={42} />
       <div className="flex flex-col justify-center">
         <span className="font-display font-black text-base sm:text-lg tracking-wider text-white uppercase group-hover:text-[#D4AF37] transition-colors leading-tight">
-          PARSHURAM <span className="text-[#D4AF37]">FITNESS</span> GYM
+          PARSHURAM <span className="text-[#D4AF37]">FITNESS</span> CLUB
         </span>
-        <span className="text-[9.5px] sm:text-[10px] tracking-[0.16em] text-[#CBD5E1] font-semibold uppercase leading-tight mt-0.5">
-          Owner: Dave • Divine Discipline
+        <span className="text-[9.5px] sm:text-[10px] tracking-[0.14em] text-[#CBD5E1] font-semibold uppercase leading-tight mt-0.5">
+          Owner: Kapil Dev • Est. 2016
         </span>
       </div>
     </Link>

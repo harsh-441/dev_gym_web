@@ -1,19 +1,21 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://parshuramgym.placeholder';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://parshuramfitnessclub.com';
 
   const routes = [
     '',
     '/about',
+    '/pricing',
+    '/facilities',
     '/trainers',
+    '/gallery',
+    '/rules',
     '/programs',
     '/exercises',
     '/nutrition',
     '/ai-planner',
     '/videos',
-    '/transformations',
-    '/pricing',
     '/contact',
     '/auth/login',
     '/auth/register'

@@ -17,14 +17,19 @@ import {
   Clock,
   MapPin,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Gift,
+  Sword,
+  Shield,
+  Activity
 } from 'lucide-react';
 import {
   BRAND,
   DEFAULT_APP_SETTINGS,
   INITIAL_WORKOUT_PROGRAMS,
   INITIAL_EXERCISES,
-  INITIAL_DIET_PLANS
+  INITIAL_DIET_PLANS,
+  INITIAL_MEMBERSHIP_PLANS
 } from '@parshuram/shared';
 
 export default function HomePage() {
@@ -47,11 +52,11 @@ export default function HomePage() {
     };
     fetchCoaches();
   }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#050B17] text-white">
       {/* 1. CINEMATIC HERO SECTION */}
       <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden border-b border-[#1E305C]">
-        {/* Cinematic dark background with subtle crimson vignette & grid */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#050B17] via-[#0A1128] to-[#050B17] opacity-95 z-0" />
         <div 
           className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-luminosity z-0"
@@ -59,443 +64,392 @@ export default function HomePage() {
             backgroundImage: `url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1920&q=80')`
           }}
         />
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#050B17]/80 to-[#050B17] z-0 pointer-events-none" />
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center flex flex-col items-center">
           {/* Badge */}
           <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#0A1128] border border-[#D4AF37]/50 mb-6 shadow-lg shadow-black/40">
             <Flame className="w-4 h-4 text-[#D4AF37] animate-pulse" />
-            <span className="text-xs uppercase font-bold tracking-widest text-zinc-200">
-              {BRAND.tagline}
+            <span className="text-xs uppercase font-bold tracking-widest text-slate-200">
+              Est. 2016 • Meerut, Uttar Pradesh • Owner: Kapil Dev
             </span>
           </div>
+
+          <p className="text-sm sm:text-base md:text-lg uppercase tracking-[0.22em] sm:tracking-[0.3em] font-black text-[#D4AF37] mb-5">
+            PARSHURAM FITNESS CLUB
+          </p>
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-black uppercase tracking-tight font-display mb-6 leading-none">
             Forge An <span className="text-[#D4AF37]">Unbreakable</span> Body &amp; Mind
           </h1>
 
-          <p className="text-base sm:text-xl text-zinc-300 max-w-3xl mb-10 leading-relaxed font-normal">
-            Welcome to <span className="text-white font-bold">{BRAND.name}</span>, directed by Dave. Rooted in divine discipline and guided by state-of-the-art sports science, we sculpt warriors with powerlifting, hypertrophy, Indian nutrition, and free digital attendance.
+          <p className="text-base sm:text-xl text-slate-300 max-w-3xl mb-10 leading-relaxed font-normal">
+            Welcome to <span className="text-white font-bold">{BRAND.name}</span>, established in 2016 in Meerut. We are committed to helping individuals achieve their fitness goals through dedicated coaching, modern training facilities, strength and cardio workouts, and personalized guidance. We also provide Karate training to encourage discipline, confidence, strength, and self-defence skills.
           </p>
 
           {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
             <Link
               href="/pricing"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white text-sm font-bold uppercase tracking-wider transition-all shadow-xl shadow-black/50 hover:scale-105"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-sm uppercase tracking-wider transition-all shadow-xl shadow-black/50 hover:scale-105"
             >
-              <span>Join Now</span>
+              <span>Join Club (From ₹500)</span>
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
             <Link
-              href="/programs"
-              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#0A1128] hover:bg-zinc-800 text-gym-silver hover:text-white text-sm font-bold uppercase tracking-wider border border-[#1E305C] transition-all"
+              href="/facilities"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-[#0A1128] hover:bg-[#1E305C] text-slate-200 hover:text-white text-sm font-bold uppercase tracking-wider border border-[#1E305C] transition-all"
             >
-              <span>Explore Programs</span>
+              <span>Explore Facilities</span>
             </Link>
           </div>
 
           {/* Quick Pillars */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 w-full pt-10 border-t border-[#1E305C]/60">
-            <div className="p-3 rounded bg-[#0A1128]/50 border border-[#1E305C]">
+            <div className="p-3.5 rounded-xl bg-[#101B37]/60 border border-[#1E305C]">
               <CalendarCheck className="w-5 h-5 text-[#D4AF37] mx-auto mb-1.5" />
               <p className="text-xs font-bold text-white uppercase">Free Attendance</p>
-              <p className="text-[11px] text-zinc-400">QR Check-in included</p>
+              <p className="text-[11px] text-slate-400">Member Portal check-in included</p>
             </div>
-            <div className="p-3 rounded bg-[#0A1128]/50 border border-[#1E305C]">
-              <Sparkles className="w-5 h-5 text-gym-silver mx-auto mb-1.5" />
-              <p className="text-xs font-bold text-white uppercase">AI Fitness Planner</p>
-              <p className="text-[11px] text-zinc-400">Personalized diet &amp; workout</p>
+            <div className="p-3.5 rounded-xl bg-[#101B37]/60 border border-[#1E305C]">
+              <Sword className="w-5 h-5 text-[#D4AF37] mx-auto mb-1.5" />
+              <p className="text-xs font-bold text-white uppercase">Karate Training</p>
+              <p className="text-[11px] text-slate-400">Discipline &amp; Self-Defence</p>
             </div>
-            <div className="p-3 rounded bg-[#0A1128]/50 border border-[#1E305C]">
-              <Award className="w-5 h-5 text-[#D4AF37] mx-auto mb-1.5" />
-              <p className="text-xs font-bold text-white uppercase">Certified Coaches</p>
-              <p className="text-[11px] text-zinc-400">Led by Founder Dave</p>
+            <div className="p-3.5 rounded-xl bg-[#101B37]/60 border border-[#1E305C]">
+              <Gift className="w-5 h-5 text-[#D4AF37] mx-auto mb-1.5" />
+              <p className="text-xs font-bold text-white uppercase">Special Offer</p>
+              <p className="text-[11px] text-slate-400">Gym Bag promotion</p>
             </div>
-            <div className="p-3 rounded bg-[#0A1128]/50 border border-[#1E305C]">
-              <Utensils className="w-5 h-5 text-gym-silver mx-auto mb-1.5" />
-              <p className="text-xs font-bold text-white uppercase">Desi Nutrition</p>
-              <p className="text-[11px] text-zinc-400">Affordable Indian diet</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. GYM INTRODUCTION & LORD PARSHURAM ETHOS */}
-      <section className="py-20 bg-[#0A1128]/40 border-b border-[#1E305C]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black/20 text-[#D4AF37] text-xs font-bold uppercase tracking-wider mb-4 border border-[#D4AF37]/30">
-                <ShieldCheck className="w-4 h-4 mr-1" />
-                The Core Philosophy
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-black uppercase font-display tracking-tight text-white mb-6">
-                Inspired by Divinity. <br />
-                <span className="text-[#D4AF37]">Built Through Discipline.</span>
-              </h2>
-              <div className="space-y-4 text-zinc-300 text-sm leading-relaxed">
-                <p>
-                  Named in honor of Lord Parshuram — the supreme embodiment of strength, courage, determination, wisdom, and tireless dedication — our gym rejects fitness shortcuts and empty gimmicks.
-                </p>
-                <p>
-                  Owner Dave built <strong className="text-white">Parshuram Fitness Gym</strong> on the conviction that physical strength is inseparable from mental discipline. Whether you are lifting an Olympic barbell for the first time or preparing for competitive powerlifting, you step onto our floor with clear purpose.
-                </p>
-                <p>
-                  Every member enjoys unlimited facility access, free digital attendance tracking, verified Indian nutrition blueprints, and guidance from master trainers who live the discipline every single day.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-[#1E305C]">
-                <div>
-                  <p className="text-2xl font-black text-[#D4AF37] font-display">14+</p>
-                  <p className="text-xs text-zinc-400 uppercase tracking-wider">Years Dave Coaching</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-gym-silver font-display">1,500+</p>
-                  <p className="text-xs text-zinc-400 uppercase tracking-wider">Members Transformed</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-black text-white font-display">100%</p>
-                  <p className="text-xs text-zinc-400 uppercase tracking-wider">Commitment to Form</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="aspect-[4/3] rounded-xl overflow-hidden border border-[#1E305C] shadow-2xl relative">
-                <img
-                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1000&q=80"
-                  alt="Parshuram Fitness Gym Facility"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050B17] via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 p-4 bg-[#050B17]/80 backdrop-blur-md rounded-lg border border-[#1E305C]">
-                  <p className="text-xs font-bold text-white uppercase tracking-wider mb-1">
-                    Authentic Iron &amp; Modern Technology
-                  </p>
-                  <p className="text-[11px] text-zinc-400">
-                    Olympic barbells, custom power cages, dumbbell rows up to 60kg, and synced mobile apps.
-                  </p>
-                </div>
-              </div>
+            <div className="p-3.5 rounded-xl bg-[#101B37]/60 border border-[#1E305C]">
+              <Clock className="w-5 h-5 text-[#D4AF37] mx-auto mb-1.5" />
+              <p className="text-xs font-bold text-white uppercase">Universal Timings</p>
+              <p className="text-[11px] text-slate-400">Morning &amp; Evening Batches</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. FEATURED WORKOUT PROGRAMS */}
+      {/* 2. ABOUT US & MISSION SUMMARY */}
       <section className="py-20 bg-[#050B17] border-b border-[#1E305C]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">Structured Protocols</span>
-              <h2 className="text-3xl sm:text-4xl font-black uppercase font-display text-white mt-2">
-                Featured Workout Programs
-              </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5 relative">
+              <div className="relative rounded-2xl overflow-hidden border-2 border-[#D4AF37] shadow-2xl bg-[#0A1128]">
+                <img
+                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80"
+                  alt="Parshuram Fitness Club Floor"
+                  className="w-full h-96 object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-4 sm:right-6 bg-[#101B37] border border-[#1E305C] p-4 rounded-xl shadow-xl">
+                <p className="text-xl font-black text-[#D4AF37] font-display">EST. 2016</p>
+                <p className="text-[10px] uppercase font-bold text-slate-300">Meerut, Uttar Pradesh</p>
+              </div>
             </div>
-            <Link
-              href="/programs"
-              className="mt-4 md:mt-0 inline-flex items-center text-xs font-bold uppercase tracking-wider text-gym-silver hover:text-white"
-            >
-              <span>View All Programs</span>
-              <ArrowRight className="w-4 h-4 ml-1 text-[#D4AF37]" />
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {INITIAL_WORKOUT_PROGRAMS.map((program) => (
-              <div
-                key={program.id}
-                className="bg-[#101B37] rounded-xl border border-[#1E305C] overflow-hidden hover:border-[#D4AF37]/60 transition-all group flex flex-col"
-              >
-                <div className="h-48 overflow-hidden relative">
-                  <img
-                    src={program.cover_image}
-                    alt={program.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 right-3 bg-[#050B17]/80 px-2.5 py-1 rounded text-[11px] font-bold text-gym-silver border border-[#1E305C]">
-                    {program.duration_weeks} Weeks
-                  </div>
-                  <div className="absolute bottom-3 left-3 bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white">
-                    {program.level}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded bg-[#0A1128] border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold uppercase tracking-wider">
+                <Award className="w-4 h-4" />
+                <span>Our Heritage &amp; Mission</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl font-black uppercase font-display text-white">
+                Dedicated Coaching &amp; Modern Facilities in Meerut
+              </h2>
+
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Welcome to <strong>Parshuram Fitness Club</strong>, established in 2016 in Meerut, Uttar Pradesh. We are committed to helping individuals achieve their fitness goals through dedicated coaching, modern training facilities, strength and cardio workouts, and personalized guidance.
+              </p>
+
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Whether you are a beginner or an experienced fitness enthusiast, our team is here to support your fitness journey. We also provide Karate training to encourage discipline, confidence, strength, and self-defence skills.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div className="p-4 rounded-xl bg-[#101B37] border border-[#1E305C] flex items-center gap-3">
+                  <img src="/images/kapil-dev-owner.jpeg" alt="Kapil Dev, Owner and Coach" className="h-14 w-14 rounded-lg border border-[#D4AF37] object-cover" />
+                  <div>
+                  <h4 className="text-sm font-bold uppercase text-white mb-1">Owner &amp; Coach</h4>
+                  <p className="text-xs text-slate-400">Kapil Dev (3 Years Experience)</p>
                   </div>
                 </div>
-
-                <div className="p-6 flex-grow flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#D4AF37] transition-colors">
-                      {program.title}
-                    </h3>
-                    <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                      {program.description}
-                    </p>
-                  </div>
-
-                  <div className="pt-4 border-t border-[#1E305C] flex items-center justify-between text-xs text-zinc-300">
-                    <span>{program.days_per_week} Days/Week</span>
-                    <Link
-                      href="/programs"
-                      className="text-[#D4AF37] font-bold hover:underline inline-flex items-center"
-                    >
-                      <span>Explore</span>
-                      <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                    </Link>
-                  </div>
+                <div className="p-4 rounded-xl bg-[#101B37] border border-[#1E305C]">
+                  <h4 className="text-sm font-bold uppercase text-white mb-1">Coach</h4>
+                  <p className="text-xs text-slate-400">Dev Vats (3 Years Experience)</p>
                 </div>
               </div>
-            ))}
+
+              <div className="pt-2">
+                <Link
+                  href="/about"
+                  className="inline-flex items-center space-x-2 text-xs font-bold text-[#D4AF37] hover:underline uppercase tracking-wider"
+                >
+                  <span>Read Full About Us &amp; Our Story</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. TRAINER SECTION */}
+      {/* 3. 7 CORE FACILITIES SECTION */}
       <section className="py-20 bg-[#0A1128] border-b border-[#1E305C]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-14">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">Expert Leadership</span>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+              Complete Training Floor
+            </span>
             <h2 className="text-3xl sm:text-4xl font-black uppercase font-display text-white mt-2">
-              Meet Your Coaches
+              Our 7 Specialized Facilities
             </h2>
-            <p className="text-sm text-zinc-400 mt-3">
-              No novice instructors. Our coaching team is led directly by Dave and certified strength specialists.
+            <p className="text-sm text-slate-300 mt-4 leading-relaxed">
+              Equipped with modern machinery and free weights. No separate male and female timings or batches — welcoming and professional for all athletes.
             </p>
           </div>
 
-          {coachesLoading ? (
-            <div className="text-center py-12">
-              <RefreshCw className="w-8 h-8 text-[#D4AF37] animate-spin mx-auto mb-2" />
-              <p className="text-xs text-slate-400">Syncing live coaching team...</p>
-            </div>
-          ) : coaches.length === 0 ? (
-            <div className="text-center py-12 bg-[#101B37] rounded-xl border border-[#1E305C]">
-              <Users className="w-10 h-10 text-gym-silver mx-auto mb-2 opacity-50" />
-              <p className="text-xs text-slate-400">Owner Dave supervises all floor lifting sessions.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {coaches.map((trainer) => {
-                const emp = trainer.employee;
-                const isDave = emp?.id === 'emp-dave' || trainer.id === 'tr-1';
-                const name = trainer.employee?.profile?.full_name || (isDave ? 'Dave' : 'Coach');
-
-                return (
-                  <div
-                    key={trainer.id}
-                    className="bg-[#101B37] rounded-xl border border-[#1E305C] p-6 flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all shadow-xl"
-                  >
-                    <div>
-                      <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#D4AF37] mb-4 mx-auto shadow-md">
-                        <img
-                          src={trainer.photo_url}
-                          alt={name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h3 className="text-lg font-bold text-white text-center">
-                        {name}
-                      </h3>
-                      <p className="text-xs text-gym-silver font-semibold text-center mb-3">
-                        {trainer.specializations?.[0] || 'Strength Training'} • {trainer.experience_years} Yrs Experience
-                      </p>
-                      <p className="text-xs text-zinc-400 leading-relaxed mb-4 text-center">
-                        {trainer.bio}
-                      </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[
+              { title: '1. Cardio Equipment', desc: 'Electronic treadmills, cycles & cross trainers for high endurance and stamina.', icon: Activity },
+              { title: '2. Weight Training', desc: 'Full spectrum dumbbell racks, Olympic bars, and calibrated iron plates.', icon: Dumbbell },
+              { title: '3. Strength Training', desc: 'Heavy squat racks, bench stations, and powerlifting compound platforms.', icon: Shield },
+              { title: '4. Personal Training', desc: 'One-on-one tailored coaching for posture, biomechanics, and progression.', icon: Users },
+              { title: '5. CrossFit Training', desc: 'Metabolic conditioning, battle ropes, plyometrics, and circuit training.', icon: Flame },
+              { title: '6. Functional Training', desc: 'Core stabilization, joint resilience, and functional movement drills.', icon: Zap },
+              { title: '7. Karate Training', desc: 'Traditional martial arts for discipline, physical stamina, and self-defence.', icon: Sword }
+            ].map((fac, idx) => {
+              const Icon = fac.icon;
+              return (
+                <div
+                  key={idx}
+                  className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 hover:border-[#D4AF37]/60 transition-all shadow-xl group flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-[#0A1128] border border-[#1E305C] flex items-center justify-center text-[#D4AF37] mb-4 group-hover:border-[#D4AF37]/50 group-hover:scale-105 transition-all">
+                      <Icon className="w-6 h-6" />
                     </div>
-
-                    <div className="pt-4 border-t border-[#1E305C]">
-                      <div className="flex flex-wrap gap-1.5 justify-center mb-4">
-                        {trainer.certifications?.map((c: string, i: number) => (
-                          <span
-                            key={i}
-                            className="text-[10px] px-2 py-0.5 rounded bg-[#0A1128] text-zinc-300 border border-[#1E305C]"
-                          >
-                            {c}
-                          </span>
-                        ))}
-                      </div>
-                      <Link
-                        href="/trainers"
-                        className="block text-center text-xs font-bold uppercase tracking-wider text-white bg-[#0A1128] hover:bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black py-2 rounded transition-colors"
-                      >
-                        View Bio &amp; Specialty
-                      </Link>
-                    </div>
+                    <h3 className="text-base font-bold uppercase font-display text-white mb-2">
+                      {fac.title}
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      {fac.desc}
+                    </p>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
+                </div>
+              );
+            })}
+          </div>
 
-      {/* 5. AI FITNESS PLANNER TEASER */}
-      <section className="py-20 bg-gradient-to-r from-[#050B17] via-[#0A1128] to-[#050B17] border-b border-[#1E305C] relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="bg-[#101B37]/90 border border-[#D4AF37]/40 rounded-2xl p-8 sm:p-12 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-10">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black/20 text-[#D4AF37] text-xs font-bold uppercase tracking-wider mb-4 border border-[#D4AF37]/40">
-                <Sparkles className="w-4 h-4" />
-                <span>AI-Powered Personalization</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-black uppercase font-display text-white mb-4">
-                Personalized AI Fitness &amp; Indian Nutrition Planner
-              </h2>
-              <p className="text-sm text-zinc-300 leading-relaxed mb-6">
-                Tell us your age, height, weight, lifting experience, and dietary preferences (including vegetarian, desi high-protein, or budget staples). Our intelligent engine calculates your exact calories, macro split, weekly workout schedule, and safe alternative Indian food substitutions in seconds.
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs text-zinc-300 mb-6">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>Mifflin-St Jeor TDEE</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>Indian Food Options</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>Allergy Respect</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>Rest &amp; Rep Guidelines</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>Save Plan to App</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>Safe Caloric Deficits</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full lg:w-auto shrink-0 flex flex-col items-center">
-              <Link
-                href="/ai-planner"
-                className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white text-sm font-bold uppercase tracking-wider transition-all shadow-xl shadow-black/60 flex items-center justify-center space-x-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Generate My Free Plan</span>
-              </Link>
-              <span className="text-[11px] text-zinc-400 mt-2">Zero paywall • Free for all members</span>
-            </div>
+          <div className="text-center mt-12">
+            <Link
+              href="/facilities"
+              className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#101B37] border border-[#1E305C] text-slate-200 hover:text-white hover:border-[#D4AF37] text-xs font-bold uppercase tracking-wider transition-all"
+            >
+              <span>View All Facilities &amp; Equipment In Depth</span>
+              <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 6. EXERCISE LIBRARY & NUTRITION PREVIEW */}
+      {/* 4. PRICING & MEMBERSHIP PREVIEW */}
       <section className="py-20 bg-[#050B17] border-b border-[#1E305C]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Exercise preview */}
-            <div className="bg-[#0A1128]/60 rounded-xl border border-[#1E305C] p-8">
-              <div className="flex items-center justify-between mb-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
+              Simple &amp; Honest Pricing
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black uppercase font-display text-white mt-2">
+              Membership Plans
+            </h2>
+            <p className="text-sm text-slate-300 mt-4 leading-relaxed">
+              Affordable packages with zero hidden fees. Guaranteed 100% free daily attendance tracking for every member.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[
+              { name: 'Monthly Membership', price: '₹500', term: 'per month', popular: false },
+              { name: '3 Months Membership', price: '₹1,300', term: 'for 3 months', popular: true, tag: 'Most Popular' },
+              { name: '6 Months Membership', price: '₹2,500', term: 'for 6 months', popular: false },
+              { name: 'Yearly Membership', price: '₹5,000', term: 'for 12 months', popular: true, tag: 'Best Value' }
+            ].map((p, idx) => (
+              <div
+                key={idx}
+                className={`bg-[#101B37] rounded-2xl border ${
+                  p.popular ? 'border-[#D4AF37] relative shadow-2xl' : 'border-[#1E305C]'
+                } p-6 flex flex-col justify-between shadow-xl`}
+              >
+                {p.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] text-[10px] font-black uppercase px-3 py-0.5 rounded-full">
+                    {p.tag}
+                  </div>
+                )}
                 <div>
-                  <span className="text-xs font-bold uppercase text-[#D4AF37]">Comprehensive Movement Guide</span>
-                  <h3 className="text-2xl font-black uppercase font-display text-white mt-1">Exercise Library</h3>
+                  <h3 className="text-lg font-black uppercase font-display text-white mb-2">{p.name}</h3>
+                  <div className="py-3 border-y border-[#1E305C] mb-4">
+                    <span className="text-3xl font-black font-display text-white">{p.price}</span>
+                    <span className="text-xs text-slate-400 ml-1.5">/ {p.term}</span>
+                  </div>
+                  <ul className="text-xs text-slate-300 space-y-2 mb-6">
+                    <li className="flex items-center"><CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37] mr-2 shrink-0" />Free Member Portal check-in</li>
+                    <li className="flex items-center"><CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37] mr-2 shrink-0" />Cardio, strength &amp; CrossFit</li>
+                    <li className="flex items-center"><CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37] mr-2 shrink-0" />Karate discipline sessions</li>
+                  </ul>
                 </div>
-                <Link href="/exercises" className="text-xs font-bold text-gym-silver hover:text-white uppercase flex items-center">
-                  <span>View All</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
+
+                <Link
+                  href={`/contact?plan=${encodeURIComponent(p.name)}`}
+                  className={`w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-center transition-all ${
+                    p.popular
+                      ? 'bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158]'
+                      : 'bg-[#0A1128] border border-[#1E305C] text-white hover:border-[#D4AF37]'
+                  }`}
+                >
+                  Inquire Now
                 </Link>
               </div>
+            ))}
+          </div>
 
-              <div className="space-y-4">
-                {INITIAL_EXERCISES.slice(0, 3).map((ex) => (
-                  <div key={ex.id} className="p-4 rounded-lg bg-[#101B37] border border-[#1E305C] flex items-start space-x-4">
-                    <div className="w-12 h-12 rounded bg-[#050B17] border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] shrink-0">
-                      <Dumbbell className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h4 className="text-sm font-bold text-white">{ex.name}</h4>
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-zinc-800 text-gym-silver">
-                          {ex.category}
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
-                        {ex.instructions[0]}
-                      </p>
-                    </div>
+          <div className="bg-[#101B37] rounded-2xl border border-[#1E305C] p-6 max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-300">
+            <div>
+              <p className="font-bold text-white uppercase">One-Time Registration: ₹100 • Personal Training: ₹3,000</p>
+              <p className="text-slate-400 text-[11px] mt-0.5">Special Offer: Gym Bag promotion available on select packages.</p>
+            </div>
+            <Link
+              href="/pricing"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-xs uppercase tracking-wider shrink-0"
+            >
+              View Full Pricing Details
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. OPERATING HOURS & LIVE LOCATION */}
+      <section className="py-20 bg-[#0A1128] border-b border-[#1E305C]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Hours */}
+            <div className="lg:col-span-6 bg-[#101B37] rounded-2xl border border-[#1E305C] p-8 shadow-2xl space-y-6">
+              <div className="flex items-center space-x-3 border-b border-[#1E305C] pb-4">
+                <Clock className="w-6 h-6 text-[#D4AF37]" />
+                <h3 className="text-xl font-black uppercase font-display text-white">
+                  Gym Opening Hours
+                </h3>
+              </div>
+
+              <div className="space-y-4 text-sm text-slate-300">
+                <div className="p-4 rounded-xl bg-[#0A1128] border border-[#1E305C] flex items-center justify-between">
+                  <span className="font-bold text-white uppercase">Monday to Saturday</span>
+                  <div className="text-right text-xs">
+                    <p className="text-white font-semibold">Morning: 5:30 AM – 10:00 AM</p>
+                    <p className="text-white font-semibold mt-0.5">Evening: 5:00 PM – 10:00 PM</p>
                   </div>
-                ))}
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#0A1128] border border-[#1E305C] flex items-center justify-between">
+                  <span className="font-bold text-rose-400 uppercase">Sunday</span>
+                  <span className="text-xs font-bold uppercase text-rose-400 bg-rose-950/40 px-3 py-1 rounded border border-rose-800">
+                    CLOSED
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-lg bg-[#050B17] border border-amber-500/30 text-xs text-amber-300">
+                  <p className="font-semibold">Holiday Information:</p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">{BRAND.openingHours.holidayNotice}</p>
+                </div>
               </div>
             </div>
 
-            {/* Nutrition preview */}
-            <div className="bg-[#0A1128]/60 rounded-xl border border-[#1E305C] p-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <span className="text-xs font-bold uppercase text-gym-silver">Macro Science &amp; Indian Meals</span>
-                  <h3 className="text-2xl font-black uppercase font-display text-white mt-1">Diet &amp; Nutrition</h3>
-                </div>
-                <Link href="/nutrition" className="text-xs font-bold text-gym-silver hover:text-white uppercase flex items-center">
-                  <span>View All</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                </Link>
+            {/* Location & Navigation */}
+            <div className="lg:col-span-6 bg-[#101B37] rounded-2xl border border-[#1E305C] p-8 shadow-2xl space-y-6">
+              <div className="flex items-center space-x-3 border-b border-[#1E305C] pb-4">
+                <MapPin className="w-6 h-6 text-[#D4AF37]" />
+                <h3 className="text-xl font-black uppercase font-display text-white">
+                  Gym Location &amp; Directions
+                </h3>
               </div>
 
-              <div className="space-y-4">
-                {INITIAL_DIET_PLANS.slice(0, 3).map((plan) => (
-                  <div key={plan.id} className="p-4 rounded-lg bg-[#101B37] border border-[#1E305C] flex items-start space-x-4">
-                    <div className="w-12 h-12 rounded bg-[#050B17] border border-gym-silver/40 flex items-center justify-center text-gym-silver shrink-0">
-                      <Utensils className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h4 className="text-sm font-bold text-white">{plan.title}</h4>
-                        <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700">
-                          {plan.calories} kcal
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
-                        {plan.description}
-                      </p>
-                    </div>
+              <div className="space-y-4 text-xs text-slate-300">
+                <div>
+                  <span className="font-bold text-white uppercase block mb-1">Physical Address</span>
+                  <a
+                    href={BRAND.googleMapsSearchUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-300 hover:text-[#D4AF37] leading-relaxed transition-colors block text-sm"
+                  >
+                    {BRAND.address}
+                  </a>
+                  <span className="text-xs text-[#D4AF37] font-semibold mt-1 block">
+                    Landmark: Near Meerut City Public School
+                  </span>
+                </div>
+
+                <div className="pt-2">
+                  <span className="font-bold text-white uppercase block mb-1">Contact Numbers</span>
+                  <p className="text-sm text-white">
+                    Primary: <a href="tel:9897191013" className="hover:text-[#D4AF37] underline font-bold">9897191013</a> • Secondary: <a href="tel:7983626564" className="hover:text-[#D4AF37] underline font-bold">7983626564</a>
+                  </p>
+                  <p className="text-slate-400 text-[11px] mt-0.5">Contact Persons: Kapil Dev &amp; Dev Vats</p>
+                </div>
+
+                <div className="pt-3">
+                  <a
+                    href={BRAND.googleMapsSearchUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center space-x-2"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    <span>Get Directions on Google Maps</span>
+                  </a>
+
+                  {/* Interactive Embedded Google Map */}
+                  <div className="rounded-xl overflow-hidden border border-[#1E305C] bg-[#0A1128] mt-4 aspect-video w-full shadow-inner">
+                    <iframe
+                      title="Parshuram Fitness Club Interactive Map"
+                      src="https://maps.google.com/maps?q=Parshuram+Fitness+Club%2C+Ram+Katori+Wali+Gali%2C+Near+Meerut+City+Public+School%2C+Meerut&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen={false}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 7. CONTACT & LOCATION SUMMARY */}
-      <section className="py-16 bg-[#0A1128]/80 border-b border-[#1E305C]">
+      {/* 6. RULES BANNER STRIP */}
+      <section className="py-12 bg-[#050B17] border-b border-[#1E305C]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-[#050B17]/70 border border-[#1E305C] rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="bg-[#101B37] border border-[#1E305C] rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
             <div>
-              <h3 className="text-2xl font-black uppercase font-display text-white mb-2">
-                Ready to Join Parshuram Fitness Gym?
+              <h3 className="text-xl font-bold uppercase font-display text-white mb-1">
+                Committed to Cleanliness, Safety &amp; Discipline
               </h3>
-              <p className="text-xs text-zinc-400">
-                Stop by during opening hours or submit an enquiry online. Dave and the team are ready to train you.
+              <p className="text-xs text-slate-300">
+                Explore our 9 official gym rules: attire, hygiene, re-racking, safety gear, and mutual respect.
               </p>
             </div>
-            <div className="flex items-center space-x-4 shrink-0">
-              <Link
-                href="/contact"
-                className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B38F24] text-[#050B17] font-black hover:bg-[#E5C158] text-white text-xs font-bold uppercase tracking-wider transition-colors"
-              >
-                Send Enquiry
-              </Link>
-              <Link
-                href="/pricing"
-                className="px-6 py-3 rounded-lg bg-[#0A1128] border border-[#1E305C] text-white text-xs font-bold uppercase tracking-wider hover:border-[#D4AF37] transition-colors"
-              >
-                View Plans
-              </Link>
-            </div>
+            <Link
+              href="/rules"
+              className="px-6 py-3 rounded-xl bg-[#0A1128] border border-[#1E305C] hover:border-[#D4AF37] text-white text-xs font-bold uppercase tracking-wider transition-all inline-flex items-center space-x-2 shrink-0"
+            >
+              <span>View 9 Gym Rules</span>
+              <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+            </Link>
           </div>
         </div>
       </section>
     </div>
   );
 }
-
-

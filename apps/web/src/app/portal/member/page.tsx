@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  QrCode,
   CalendarCheck,
   Dumbbell,
   Utensils,
@@ -17,17 +16,17 @@ import {
   LogOut,
   ShieldAlert
 } from 'lucide-react';
-import { api, BRAND, MemberAttendance } from '@parshuram/shared';
+import { MemberAttendance } from '@parshuram/shared';
 
 export default function MemberPortalPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
   const [member, setMember] = useState<any>(null);
   const [plan, setPlan] = useState<any>(null);
+  const [membership, setMembership] = useState<any>(null);
   const [attendance, setAttendance] = useState<MemberAttendance[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [qrTokenInput, setQrTokenInput] = useState('');
   const [checkInLoading, setCheckInLoading] = useState(false);
   const [checkInStatus, setCheckInStatus] = useState<{ success: boolean; message: string } | null>(null);
 
@@ -35,41 +34,34 @@ export default function MemberPortalPage() {
   const [weightLogged, setWeightLogged] = useState(false);
 
   useEffect(() => {
-    const userRole = localStorage.getItem('pfg_user_role');
-    const userEmail = localStorage.getItem('pfg_user_email');
+    const token = localStorage.getItem('pfg_user_token');
 
     // Access control: only members or admins can view
-    if (!userEmail) {
+    if (!token || localStorage.getItem('pfg_user_role') !== 'member') {
       router.push('/auth/login');
       return;
     }
 
     const loadMemberData = async () => {
       try {
-        const res = await fetch(`/api/auth/me?email=${encodeURIComponent(userEmail)}`);
+        const res = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
         const data = await res.json();
 
         if (data.success && data.profile) {
           setProfile(data.profile);
           setMember(data.member);
           setPlan(data.plan);
+          setMembership(data.membership);
           if (data.member?.weight_kg) {
             setCurrentWeight(data.member.weight_kg);
           }
 
-          // Filter attendance for this specific member
-          const allAttendance: MemberAttendance[] = (api as any).store.memberAttendance;
-          if (data.member) {
-            setAttendance(allAttendance.filter((a) => a.member_id === data.member.id));
-          } else {
-            setAttendance(allAttendance);
-          }
+          const attendanceResponse = await fetch('/api/attendance', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+          const attendanceData = await attendanceResponse.json();
+          if (!attendanceResponse.ok) throw new Error(attendanceData.error || 'Could not load attendance.');
+          setAttendance(attendanceData.attendance || []);
         } else {
-          // Fallback to first member if demo profile
-          setProfile((api as any).store.profiles.find((p: any) => p.role === 'member'));
-          setMember((api as any).store.members[0]);
-          setPlan((api as any).store.membershipPlans[0]);
-          setAttendance([...(api as any).store.memberAttendance]);
+          throw new Error(data.error || 'Could not load member profile.');
         }
       } catch (err) {
         console.error(err);
@@ -97,26 +89,19 @@ export default function MemberPortalPage() {
     setCheckInStatus(null);
 
     try {
-      const active = await api.getActiveQRSession();
-      const tokenToUse = qrTokenInput.trim() || active.token;
-
-      const res = await fetch('/api/attendance/check-in', {
+      const token = localStorage.getItem('pfg_user_token') || '';
+      const res = await fetch('/api/attendance', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: member.id,
-          userType: 'member',
-          token: tokenToUse,
-          method: 'qr'
-        })
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({})
       });
 
       const data = await res.json();
       if (res.ok) {
         setCheckInStatus({ success: true, message: data.message });
-        const allAtt: MemberAttendance[] = (api as any).store.memberAttendance;
-        setAttendance(allAtt.filter((a) => a.member_id === member.id));
-        setQrTokenInput('');
+        const attendanceResponse = await fetch('/api/attendance', { headers: { Authorization: `Bearer ${token}` }, cache: 'no-store' });
+        const attendanceData = await attendanceResponse.json();
+        setAttendance(attendanceData.attendance || []);
       } else {
         setCheckInStatus({ success: false, message: data.error || 'Check-in failed' });
       }
@@ -126,6 +111,8 @@ export default function MemberPortalPage() {
       setCheckInLoading(false);
     }
   };
+
+  const membershipValid = membership?.status === 'active' && membership?.end_date && new Date(`${membership.end_date}T23:59:59+05:30`).getTime() >= Date.now();
 
   if (loading) {
     return (
@@ -157,6 +144,10 @@ export default function MemberPortalPage() {
               <p className="text-xs text-slate-300 mt-1">
                 Goal: <span className="text-[#D4AF37] font-semibold capitalize">{member?.fitness_goal?.replace('_', ' ') || 'General Fitness'}</span> • Plan: {plan?.name || 'Quarterly Warrior'} • Email: {profile?.email}
               </p>
+              <p className="mt-2 text-xs text-slate-300">
+                Membership: <span className="font-semibold capitalize text-[#D4AF37]">{membership ? (membershipValid ? 'Valid' : 'Expired') : 'No membership recorded'}</span>
+                {membership?.end_date ? ` · ${membership.start_date} to ${membership.end_date}` : ''}
+              </p>
             </div>
           </div>
 
@@ -178,13 +169,13 @@ export default function MemberPortalPage() {
           </div>
         </div>
 
-        {/* 100% Free Daily QR Check-In Terminal Card */}
+        {/* Member self check-in */}
         <div className="bg-[#101B37] rounded-2xl border border-[#D4AF37]/40 p-6 sm:p-8 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-4 flex flex-col items-center text-center">
               <div className="w-36 h-36 rounded-2xl bg-[#050B17] border-2 border-[#D4AF37] flex flex-col items-center justify-center p-4 shadow-xl">
-                <QrCode className="w-24 h-24 text-[#D4AF37]" />
-                <span className="text-[9px] uppercase font-bold text-white mt-1">Free Floor Check-In</span>
+                <CheckCircle2 className="w-20 h-20 text-[#D4AF37]" />
+                <span className="text-[9px] uppercase font-bold text-white mt-1">Member Check-In</span>
               </div>
               <p className="text-[10px] text-emerald-400 mt-2 font-bold uppercase">
                 Zero Fees • Free For All Registered Athletes
@@ -198,24 +189,17 @@ export default function MemberPortalPage() {
               </div>
 
               <p className="text-slate-300 leading-relaxed">
-                Scan the active display QR terminal located at the entrance desk of Parshuram Fitness Gym to record your daily attendance. You can also paste the session code or tap check-in below.
+                Check in from your member account. Your visit is saved with today&apos;s gym date and server-recorded time.
               </p>
 
               <form onSubmit={handleMemberCheckIn} className="space-y-3">
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    type="text"
-                    placeholder="Enter or scan active QR token (or leave blank to auto-sync)..."
-                    value={qrTokenInput}
-                    onChange={(e) => setQrTokenInput(e.target.value)}
-                    className="flex-grow px-3.5 py-2.5 rounded-xl bg-[#0A1128] border border-[#1E305C] text-white text-xs placeholder-slate-500 focus:border-[#D4AF37] focus:outline-none"
-                  />
                   <button
                     type="submit"
                     disabled={checkInLoading}
                     className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#B38F24] hover:from-[#E5C158] hover:to-[#D4AF37] text-[#050B17] font-black uppercase tracking-wider text-xs transition-all shadow-md shadow-black/50 shrink-0 disabled:opacity-50"
                   >
-                    {checkInLoading ? 'Checking In...' : 'Confirm Free Check-In'}
+                    {checkInLoading ? 'Checking In...' : 'Check In Today'}
                   </button>
                 </div>
               </form>
@@ -375,7 +359,7 @@ export default function MemberPortalPage() {
                 {attendance.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="py-6 text-center text-slate-400">
-                      No visits recorded yet. Scan the entrance QR code to check in for free!
+                      No visits recorded yet. Use Check In Today to record a visit.
                     </td>
                   </tr>
                 ) : (

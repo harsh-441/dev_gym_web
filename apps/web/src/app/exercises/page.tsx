@@ -51,7 +51,7 @@ export default function ExercisesPage() {
             Exercise Library
           </h1>
           <p className="text-sm text-zinc-300 mt-4 leading-relaxed">
-            Master pristine barbell, dumbbell, and bodyweight execution. Filter by muscle category and learn safe cues developed by Coach Dave.
+            Master pristine barbell, dumbbell, and bodyweight execution. Filter by muscle category and learn safe cues developed by Coaches Kapil Dev &amp; Dev Vats.
           </p>
         </div>
 
